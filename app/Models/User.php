@@ -17,6 +17,8 @@ class User extends Authenticatable
         'last_name',
         'email',
         'email_verified_at',
+        'phone_number_verified_at',
+        'phone_number',
         'password',
         'register_ip',
         'activation_token'
@@ -34,6 +36,6 @@ class User extends Authenticatable
      * @var array<string, string>
      */
     protected $casts = [
-        'email_verified_at' => 'datetime',
+//        'email_verified_at' => 'datetime',
     ];
 }
