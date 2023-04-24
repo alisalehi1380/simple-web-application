@@ -4,8 +4,8 @@ namespace App\Rules;
 
 use Illuminate\Contracts\Validation\InvokableRule;
 
-// Checks the Email & phone_number format is correct or not
-class phoneAndEmail implements InvokableRule
+// Checks the phone_number format is correct or not
+class phone implements InvokableRule
 {
     public function __invoke($attribute, $value, $fail)
     {
@@ -15,8 +15,6 @@ class phoneAndEmail implements InvokableRule
             } elseif (strlen($value) !== 11) {
                 $fail('تعداد ارقام شماره موبایل صحیح نیست');
             }
-        } elseif (!filter_var($value, FILTER_VALIDATE_EMAIL)) {
-            $fail('فرمت ایمیل صحیح نیست');
         }
     }
 }
