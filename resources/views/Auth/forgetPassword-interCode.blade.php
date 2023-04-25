@@ -16,14 +16,16 @@
             </div>
             <div style="border: 1px solid white;background-color: white;border-radius: 8px;padding: 35px;width: 360px;">
                 <div>
-                    <h2 class="text-center" style="padding-bottom: 1.5rem; font-size: 20px">رمزت رو فراموش کردی؟</h2>
-                    <p>شماره موبایلت رو وارد کن، کد تایید رو برات میفرستیم</p>
+                    <h2 class="text-center" style="padding-bottom: 1.5rem; font-size: 20px">کد ارسال شده رو وارد کن</h2>
 
-                    <form method="post" action="{{ route('forgetPassword.sendSMS') }}">
+                    <form method="post" action="{{ route('forgetPassword.confirmCode' , [$phone_number]) }}">
                         @csrf
+
+                        <input type="hidden" name="phone_number" value="{{ request()->session()->get('phone_number') }}">
+
                         <div class="mb-3">
-                            <input type="text" class="form-control @error('phone_number') is-invalid @enderror" value="{{old('phone_number')}}" name="phone_number" placeholder="شماره موبایل">
-                            @error('phone_number')<span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>@enderror
+                            <input type="text" class="form-control @error('token') is-invalid @enderror" value="{{old('token')}}" name="token" placeholder="">
+                            @error('token')<span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>@enderror
                         </div>
                         <button type="submit" class="btn btn-primary w-100" style="border-radius: 50px;">ارسال</button>
                     </form>

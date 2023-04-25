@@ -43,7 +43,7 @@
                             @error('data_login')<span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>@enderror
                         </div>
                         <div class="mb-3">
-                            <a class="forgetPassword" style="float: left;font-size: 0.6rem;text-decoration: none;" href="{{ route('forget.password') }}">فراموش کرده اید؟</a>
+                            <a class="forgetPassword" style="float: left;font-size: 0.6rem;text-decoration: none;" href="{{ route('forgetPassword') }}">فراموش کرده اید؟</a>
                             <input type="password" class="form-control @error('password') is-invalid @enderror" name="password" placeholder="رمز عبور">
                             @error('password')<span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>@enderror
                         </div>

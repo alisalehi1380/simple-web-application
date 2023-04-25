@@ -17,19 +17,19 @@ Route::middleware('guest')->group(function () {
     Route::get('auth/login-google', [LoginController::class, 'loginByGoogle'])->name('loginByGoogle');
     Route::get('auth/google/callback', [LoginController::class, 'redirectFromGoogle']);
 
-
     //password
-    Route::prefix('password')->group(function () {
+    Route::view('password/forget-password', 'Auth.forgetPassword')->name('forgetPassword');
+    Route::post('password/forget-password/sendSMS', [ForgetPasswordController::class, 'sendSMS'])->name('forgetPassword.sendSMS');
 
-        Route::view('forget-password', 'Auth.forgetPassword')->name('forget.password');
-        Route::post('forget-password', [ForgetPasswordController::class, 'sendForgetPasswordSMS'])->name('forgetPassword.sendForgetPasswordSMS');
-        Route::post('forget-password/confirm', [ForgetPasswordController::class, ''])->name('forgetPassword.');
+    Route::get('password/forget-password/inter-code/{phone_number}', [ForgetPasswordController::class, 'interCode'])->name('forgetPassword.interCode');
+    Route::post('password/forget-password/confirm-code/{phone_number}', [ForgetPasswordController::class, 'confirmCode'])->name('forgetPassword.confirmCode');
 
-    });
+
+
 });
 
 //logout
-Route::middleware('auth')->prefix('auth')->get('logout', [LoginController::class, 'logout'])->name('logout');
+Route::middleware('auth')->get('logout', [LoginController::class, 'logout'])->name('logout');
 
 //Dashboard
 Route::middleware('auth')->prefix('dashboard')->group(function () {

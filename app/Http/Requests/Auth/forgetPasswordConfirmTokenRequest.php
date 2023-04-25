@@ -6,7 +6,7 @@ use App\Rules\phone;
 use App\Rules\phoneVerified;
 use Illuminate\Foundation\Http\FormRequest;
 
-class forgetPasswordTokenRequest extends FormRequest
+class forgetPasswordConfirmTokenRequest extends FormRequest
 {
 
     public function authorize()
@@ -18,7 +18,7 @@ class forgetPasswordTokenRequest extends FormRequest
     public function rules()
     {
         return [
-            'token' => ['required', 'integer', 'size:5']
+            'token' => ['required', 'integer', 'digits:5'],
         ];
     }
 }

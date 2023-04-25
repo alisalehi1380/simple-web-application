@@ -18,7 +18,7 @@ class forgetPasswordRequest extends FormRequest
     public function rules()
     {
         return [
-            'phone_number' => ['required' , new phone ,'exists:users,phone_number' , new phoneVerified]
+            'phone_number' => ['required' , 'numeric' , new phone ,'exists:users,phone_number' , new phoneVerified]
         ];
     }
 }
