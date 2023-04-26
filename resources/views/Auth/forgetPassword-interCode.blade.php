@@ -18,11 +18,8 @@
                 <div>
                     <h2 class="text-center" style="padding-bottom: 1.5rem; font-size: 20px">کد ارسال شده رو وارد کن</h2>
 
-                    <form method="post" action="{{ route('forgetPassword.confirmCode' , [$phone_number]) }}">
+                    <form method="post" action="{{ route('forgetPassword.confirmCode') }}">
                         @csrf
-
-                        <input type="hidden" name="phone_number" value="{{ request()->session()->get('phone_number') }}">
-
                         <div class="mb-3">
                             <input type="text" class="form-control @error('token') is-invalid @enderror" value="{{old('token')}}" name="token" placeholder="">
                             @error('token')<span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>@enderror

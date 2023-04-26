@@ -14,35 +14,25 @@ class ForgetPasswordController extends Controller
     {
         $user = $this->getUser($request);
         $this->tokenGenerator(10000, 99999, new Tokens(), $user);
-        return redirect()->route('forgetPassword.interCode', ['phone_number' => $request->phone_number]);
+        session()->put('phone_number', $request->phone_number);
+        return redirect()->route('forgetPassword.interCode');
     }
 
-    public function interCode($phone_number)
+    public function confirmCode(forgetPasswordConfirmTokenRequest $request)
     {
-        return view('Auth.forgetPassword-interCode', ['phone_number' => $phone_number]);
-    }
+        $phone_number = session()->get('phone_number');
+        $token_code = $request->input('token');
+        $user = User::where('phone_number', $phone_number)->first();
+        $token_table = Tokens::where('user_id', $user->id)->where('type', 'forget_password')->latest()->first();
 
-    public function confirmCode(forgetPasswordConfirmTokenRequest $request, $phone_number)
-    {
-        if (isset($phone_number)) {
-            $token_code = $request->input('token');
-            $user = User::where('phone_number', $phone_number)->first();
-            $token_table = Tokens::where('user_id', $user->id)->where('type', 'forget_password')->latest()->first();
-            if (isset($user)) {
-                if ($token_table->token === $token_code) {
-                    \auth()->loginUsingId($user->id);
-                    session()->flashInput(['phone_number']);
-                } else {
-                    toast('کد وارد شده صحیح نیست', 'error');
-                    return redirect()->back();
-                }
-            }
+        if ($token_table->token === $token_code) {
+            \auth()->loginUsingId($user->id);
+            session()->forget('phone_number');
         }
+        toast('کد وارد شده صحیح نیست', 'error');
+        return redirect()->back();
     }
 
-    /**
-     * token generator
-     */
     private function tokenGenerator($min, $max, $table, User $user): void
     {
         $token = mt_rand($min, $max);

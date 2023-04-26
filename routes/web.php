@@ -21,8 +21,8 @@ Route::middleware('guest')->group(function () {
     Route::view('password/forget-password', 'Auth.forgetPassword')->name('forgetPassword');
     Route::post('password/forget-password/sendSMS', [ForgetPasswordController::class, 'sendSMS'])->name('forgetPassword.sendSMS');
 
-    Route::get('password/forget-password/inter-code/{phone_number}', [ForgetPasswordController::class, 'interCode'])->name('forgetPassword.interCode');
-    Route::post('password/forget-password/confirm-code/{phone_number}', [ForgetPasswordController::class, 'confirmCode'])->name('forgetPassword.confirmCode');
+    Route::view('password/forget-password/inter-code', 'Auth.forgetPassword-interCode')->name('forgetPassword.interCode')->middleware(['RedirectIfNotEnterPhoneNumber']);
+    Route::post('password/forget-password/confirm-code', [ForgetPasswordController::class, 'confirmCode'])->name('forgetPassword.confirmCode');
 
 
 
