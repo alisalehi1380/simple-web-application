@@ -13,45 +13,51 @@ class ForgetPasswordController extends Controller
 {
     public function sendSMS(forgetPasswordRequest $request)
     {
+        $phone_number = $request->phone_number;
+        $cache = cache()->get('forgetPassword-' . $phone_number);
+
+        if (isset($cache) && $cache > 4) {
+            toast("تعداد تلاش های شما بیش از حد مجاز بوده است !<br/> لطفا 30 دقیقه صبر کنید", 'error');
+            return redirect()->route('forgetPassword');
+        }
+
         $user = $this->getUser($request);
         $this->tokenGenerator(10000, 99999, new Tokens(), $user);
-        session()->put('phone_number', $request->phone_number);
-//        cache()->put('forgetPassword-'.$request->phone_number , 0);
-        cache()->increment('forgetPassword-'.$request->phone_number , 1);
+        session()->put('phone_number', $phone_number);
+        cache()->put('forgetPassword-' . $phone_number, 0, now()->addMinutes(30)); //todo send token replace put in session , handle it by cache
+        cache()->increment('forgetPassword-' . $phone_number, 1);
         return redirect()->route('forgetPassword.interCode');
     }
 
     public function confirmCode(forgetPasswordConfirmTokenRequest $request)
     {
         $phone_number = session()->get('phone_number');
-        $token_code = $request->input('token');
-        $user = User::where('phone_number', $phone_number)->first();
-        $findTokenInDatabase = Tokens::where('user_id', $user->id)->where('type', 'forget_password')->latest()->first();
-        $tokenInDatabase = $findTokenInDatabase->token;
-        $created_at = $findTokenInDatabase->created_at;
-        $expire_at = Carbon::parse($created_at)->addMinutes(2);
-        $now = Carbon::now();
-        $cache = cache()->get('forgetPassword-'.$phone_number);
+        $cache = cache()->get('forgetPassword-' . $phone_number);
 
-
-        if ($cache < 4){
+        if ($cache < 4) {
+            $user = User::where('phone_number', $phone_number)->first();
+            $findTokenInDatabase = Tokens::where('user_id', $user->id)->where('type', 'forget_password')->latest()->first();
+            $tokenInDatabase = $findTokenInDatabase->token;
+            $token_code = $request->input('token');
             if ($tokenInDatabase === $token_code) {
+                $now = Carbon::now();
+                $created_at = $findTokenInDatabase->created_at;
+                $expire_at = Carbon::parse($created_at)->addMinutes(2);
                 if ($now <= $expire_at) {
                     \auth()->loginUsingId($user->id);
                     session()->forget('phone_number');
-                    cache()->forget('forgetPassword-'.$phone_number);
+                    cache()->forget('forgetPassword-' . $phone_number);
                 } else {
                     toast('زمان انقضا کد به پایان رسیده است. لطفا مجددا امتحان کنید', 'error');
                     session()->forget('phone_number');
                     return redirect()->route('forgetPassword');
                 }
-            }else{
-            toast('کد وارد شده صحیح نیست.', 'error');
-            return redirect()->back();
+            } else {
+                toast('کد وارد شده صحیح نیست.', 'error');
+                return redirect()->back();
             }
-        }else{
-            // todo handle after 30 mints to retry
-            toast('تعداد تلاش های شما بیش از حد مجاز است! لطفا 30 دقیقه دیگر مجدد امتحان کنید', 'error');
+        } else {
+            toast("تعداد تلاش های شما بیش از حد مجاز بوده است !<br/> لطفا 30 دقیقه دیگر مجددا امتحان کنید", 'error');
             return redirect()->route('forgetPassword');
         }
 
