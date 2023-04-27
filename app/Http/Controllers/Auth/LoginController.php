@@ -11,6 +11,11 @@ use Laravel\Socialite\Facades\Socialite;
 
 class LoginController extends Controller
 {
+    public function showLoginForm()
+    {
+        return view('Auth.login');
+    }
+
     //login
     public function login(LoginRequest $request)
     {
@@ -20,7 +25,7 @@ class LoginController extends Controller
             alert()->html('چنین کاربری وجود ندارد', "<a class='btn btn-warning' href='/regester'> ثبت نام کنید</a>", 'error');
             return redirect()->back();
         }
-        toast('Success Toast','success');
+        toast('Success Toast', 'success');
         dump(\auth()->user());
         dd('you are logged in!');
         return redirect('/dashboard');
