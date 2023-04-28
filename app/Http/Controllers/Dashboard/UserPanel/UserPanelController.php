@@ -3,12 +3,14 @@
 namespace App\Http\Controllers\Dashboard\UserPanel;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 
 class UserPanelController extends Controller
 {
     public function index()
     {
-        return route('user.panel');
+//            $clock = $carbon->format('H:i:s'); todo
+        return view('Panel.User.userPanel', [
+            'date' => \verta()->format('%d %B %Y'),
+        ]);
     }
 }
