@@ -7,16 +7,13 @@ use Illuminate\Support\Facades\Route;
 
 
 
-//logout
-Route::middleware('auth')->get('logout', [LoginController::class, 'logout'])->name('logout');
+//Panel
+Route::middleware('auth')->group(function () {
+Route::get('panel/user', [UserPanelController::class, 'index'])->name('panel.user');
 
-//Dashboard
-Route::middleware('auth')->prefix('dashboard')->group(function () {
-    Route::prefix('user')->group(function () {
-        Route::get('/', [UserPanelController::class, 'index'])->name('user.panel');
-    });
-    Route::prefix('admin')->middleware('admin')->group(function () { //todo create middleware 'Admin'
-    });
+
+//    Route::middleware('admin')->group(function () { //todo create middleware 'Admin'
+//    });
 });
 
 

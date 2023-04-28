@@ -19,6 +19,10 @@ class RouteServiceProvider extends ServiceProvider
      */
     public const HOME = '/home';
 
+    public const DASHBOARD_ADMIN = '/dashboard/admin';
+
+    public const DASHBOARD_USER = '/dashboard/user';
+
     /**
      * Define your route model bindings, pattern filters, and other route configuration.
      *
@@ -28,16 +32,13 @@ class RouteServiceProvider extends ServiceProvider
     {
         $this->configureRateLimiting();
 
-        $this->routes(function () {
-            Route::middleware('api')
-                ->prefix('api')
-                ->group(base_path('routes/api/auth/auth.php'));
 
-            Route::middleware('web')
-                ->group(base_path('routes/web.php'));
+        $this->routes(function () {
+            $this->api();
+            $this->website();
+            $this->authWeb();
         });
 
-        $this->authWeb();
     }
 
     /**
@@ -52,12 +53,26 @@ class RouteServiceProvider extends ServiceProvider
         });
     }
 
-    public function authWeb()
+    private function api()
     {
-        return $this->routes(function () {
+        return
+            Route::middleware('api')
+                ->prefix('api')
+                ->group(base_path('routes/api/auth/auth.php'));
+    }
+
+    private function website()
+    {
+        return
+            Route::middleware('web')
+                ->group(base_path('routes/web.php'));
+    }
+
+    private function authWeb()
+    {
+        return
             Route::middleware('web')
                 ->group(base_path('routes/Auth/auth.php'));
-        });
     }
 
 }

@@ -24,7 +24,7 @@
                             <input type="text" class="form-control @error('token') is-invalid @enderror" value="{{old('token')}}" name="token" placeholder="">
                             @error('token')<span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>@enderror
                         </div>
-                        <button type="submit" class="btn btn-primary w-100" style="border-radius: 50px;">ارسال</button>
+                        <button type="submit" class="btn btn-primary w-100" style="border-radius: 50px;">ورود</button>
                     </form>
                 </div>
             </div>

@@ -24,12 +24,13 @@ class ForgetPasswordController extends Controller
         $user = $this->getUser($request);
         $this->tokenGenerator(10000, 99999, new Tokens(), $user);
         session()->put('phone_number', $phone_number);
-        cache()->put('forgetPassword-' . $phone_number, 0, now()->addMinutes(30)); //todo send token replace put in session , handle it by cache
+        cache()->put('forgetPassword-' . $phone_number, 0, now()->addMinutes(30));
         cache()->increment('forgetPassword-' . $phone_number, 1);
         return redirect()->route('forgetPassword.interCode');
     }
 
     public function confirmCode(forgetPasswordConfirmTokenRequest $request)
+
     {
         $phone_number = session()->get('phone_number');
         $cache = cache()->get('forgetPassword-' . $phone_number);
@@ -44,9 +45,13 @@ class ForgetPasswordController extends Controller
                 $created_at = $findTokenInDatabase->created_at;
                 $expire_at = Carbon::parse($created_at)->addMinutes(2);
                 if ($now <= $expire_at) {
-                    \auth()->loginUsingId($user->id);
-                    session()->forget('phone_number');
-                    cache()->forget('forgetPassword-' . $phone_number);
+                    if (\auth()->loginUsingId($user->id)) {
+                        session()->forget('phone_number');
+                        cache()->forget('forgetPassword-' . $phone_number);
+                        Tokens::where('token', $tokenInDatabase)->delete();
+                    toast('با موفقیت وارد شدید.', 'success');
+                    return redirect()->route('dashboard.user'); //todo
+                    }
                 } else {
                     toast('زمان انقضا کد به پایان رسیده است. لطفا مجددا امتحان کنید', 'error');
                     session()->forget('phone_number');
@@ -63,6 +68,13 @@ class ForgetPasswordController extends Controller
 
     }
 
+    /**
+     * @param string $min
+     * @param string $max
+     * @param object $table
+     * @param User $user
+     * @return void
+     */
     private function tokenGenerator($min, $max, $table, User $user): void
     {
         $token = mt_rand($min, $max);
@@ -75,6 +87,8 @@ class ForgetPasswordController extends Controller
 
     /**
      * check phone_number user verified & return user
+     * @param forgetPasswordRequest $request
+     * @return object user
      */
     private function getUser(forgetPasswordRequest $request)
     {

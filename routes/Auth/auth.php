@@ -21,3 +21,6 @@ Route::middleware('guest')->group(function () {
     Route::view('forget-password/confirm', 'Auth.forgetPassword-interCode')->name('forgetPassword.interCode')->middleware(['RedirectIfNotEnterPhoneNumber']);
     Route::post('forget-password/confirm', [ForgetPasswordController::class, 'confirmCode'])->name('forgetPassword.confirmCode');
 });
+
+//logout
+Route::middleware('auth')->get('logout', [LoginController::class, 'logout'])->name('logout');
