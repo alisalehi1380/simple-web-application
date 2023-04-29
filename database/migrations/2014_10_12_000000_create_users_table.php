@@ -22,7 +22,7 @@ return new class extends Migration {
             $table->boolean('phone_number_verified_at')->nullable();
             $table->string('password');
             $table->string('register_ip')->nullable();
-            $table->string('activation_token');
+            $table->string('activation_token')->nullable();
             $table->rememberToken();
             $table->timestamps();
         });

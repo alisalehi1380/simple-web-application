@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Constants\SweetAlertToast;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Models\User;
@@ -38,16 +39,15 @@ class LoginController extends Controller
     // redirect from Google
     public function redirectFromGoogle()
     {
-        $user = Socialite::driver('google')->user();
+        $google = Socialite::driver('google')->user();
+        $user = User::where('email', $google->getEmail())->first();
 
-        $user_me = User::where('email', $user->getEmail())->first();
-
-        if ($user_me) {
-            Auth::login($user_me);
-            return redirect('/welcome');
+        if ($user) {
+            auth()->login($user);
         }
-        alert()->html('چنین کاربری وجود ندارد', "<a class='btn btn-warning' href='/regester'> ثبت نام کنید</a>", 'error');
-        return redirect('/login');
+
+        alert()->warning('', SweetAlertToast::pleaseFirstSignup);
+        return redirect()->route('register');
     }
 
     // test
@@ -60,7 +60,12 @@ class LoginController extends Controller
         return view('Auth.login');
     }
 
-    // set credentials for login [phoneNumber or Email]
+
+    /**
+     * set credentials for login [phoneNumber or Email]
+     * @param Request $validatedRequest
+     * @return array|void
+     */
     private function credentials(Request $validatedRequest)
     {
         $data_login = $validatedRequest->input('data_login');

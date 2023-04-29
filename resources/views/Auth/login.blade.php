@@ -59,7 +59,7 @@
                     </div>
                     <div class="d-flex justify-content-center" style="padding-top: 80px;">
                         <p class="d-inline-block" style="padding-left: 4px; margin: 0px !important;">حساب کاربری ندارید؟</p>
-                        <a href="#" class="text-decoration-none">ثبت نام</a>
+                        <a href="{{ route('register') }}" class="text-decoration-none">ثبت نام</a>
                     </div>
                 </div>
             </div>

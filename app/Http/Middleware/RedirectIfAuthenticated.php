@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Constants\SweetAlertToast;
 use App\Providers\RouteServiceProvider;
 use Closure;
 use Illuminate\Http\Request;
@@ -23,6 +24,7 @@ class RedirectIfAuthenticated
 
         foreach ($guards as $guard) {
             if (Auth::guard($guard)->check()) {
+                toast( SweetAlertToast::loginSuccess, 'success');
                 return redirect(RouteServiceProvider::DASHBOARD_USER); //todo if not admin redirect to user
             }
         }
