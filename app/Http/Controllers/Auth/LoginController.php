@@ -22,13 +22,11 @@ class LoginController extends Controller
         $credentials = $this->credentials($request);
 
         if (!Auth::attempt($credentials)) {
-            alert()->html('چنین کاربری وجود ندارد', "<a class='btn btn-warning' href='/regester'> ثبت نام کنید</a>", 'error');
-            return redirect()->back();
+            toast(SweetAlertToast::pleaseFirstSignup, 'warning');
+            return redirect()->route('register');
         }
-        toast('Success Toast', 'success');
-        dump(\auth()->user());
-        dd('you are logged in!');
-        return redirect('/dashboard');
+        toast(SweetAlertToast::loginSuccess, 'success');
+        return redirect()->route('user.panel');
     }
 
     // login by Google

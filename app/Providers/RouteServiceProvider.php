@@ -17,7 +17,7 @@ class RouteServiceProvider extends ServiceProvider
      *
      * @var string
      */
-    public const HOME = '/home';
+//    public const HOME = '/home';
 
     public const DASHBOARD_ADMIN = '/dashboard/admin';
 
@@ -37,6 +37,7 @@ class RouteServiceProvider extends ServiceProvider
             $this->api();
             $this->website();
             $this->authWeb();
+            $this->panel();
         });
 
     }
@@ -73,6 +74,13 @@ class RouteServiceProvider extends ServiceProvider
         return
             Route::middleware('web')
                 ->group(base_path('routes/Auth/auth.php'));
+    }
+
+    private function panel()
+    {
+        return
+            Route::middleware('web')
+                ->group(base_path('routes/Panel/userPanel.php'));
     }
 
 }

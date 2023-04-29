@@ -1,6 +1,5 @@
 <?php
 
-use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Dashboard\UserPanel\UserPanelController;
 use Illuminate\Support\Facades\Route;
 
@@ -14,11 +13,13 @@ Route::get('panel/user', [UserPanelController::class, 'index'])->name('panel.use
 
 //    Route::middleware('admin')->group(function () { //todo create middleware 'Admin'
 //    });
-});
+//});
 
 
 // website
 //Route::get('/', [websiteController::class , 'index'])->name('website');
+
+
 
 //test
 Route::get('test', [LoginController::class, 'test'])->name('test');
