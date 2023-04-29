@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Constants\SweetAlertToast;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\forgetPasswordConfirmTokenRequest;
 use App\Http\Requests\Auth\forgetPasswordRequest;
@@ -17,7 +18,7 @@ class ForgetPasswordController extends Controller
         $cache = cache()->get('forgetPassword-' . $phone_number);
 
         if (isset($cache) && $cache > 4) {
-            toast("تعداد تلاش های شما بیش از حد مجاز بوده است !<br/> لطفا 30 دقیقه صبر کنید", 'error');
+            toast(SweetAlertToast::moreThanSpecifiedLimit_tryAfter, 'error');
             return redirect()->route('forgetPassword');
         }
 
@@ -45,24 +46,22 @@ class ForgetPasswordController extends Controller
                 $created_at = $findTokenInDatabase->created_at;
                 $expire_at = Carbon::parse($created_at)->addMinutes(2);
                 if ($now <= $expire_at) {
-                    if (\auth()->loginUsingId($user->id)) {
-                        session()->forget('phone_number');
-                        cache()->forget('forgetPassword-' . $phone_number);
-                        Tokens::where('token', $tokenInDatabase)->delete();
-                    toast('با موفقیت وارد شدید.', 'success');
-                    return redirect()->route('dashboard.user'); //todo
-                    }
+                    auth()->login($user);
+                    session()->forget('phone_number');
+                    cache()->forget('forgetPassword-' . $phone_number);
+                    Tokens::where('token', $tokenInDatabase)->delete();
+//                    return redirect()->route('user.panel'); //todo
                 } else {
-                    toast('زمان انقضا کد به پایان رسیده است. لطفا مجددا امتحان کنید', 'error');
+                    toast(SweetAlertToast::expireTimeToken, 'error');
                     session()->forget('phone_number');
                     return redirect()->route('forgetPassword');
                 }
             } else {
-                toast('کد وارد شده صحیح نیست.', 'error');
+                toast(SweetAlertToast::notCorrectInterCode, 'error');
                 return redirect()->back();
             }
         } else {
-            toast("تعداد تلاش های شما بیش از حد مجاز بوده است !<br/> لطفا 30 دقیقه دیگر مجددا امتحان کنید", 'error');
+            toast(SweetAlertToast::moreThanSpecifiedLimit_tryAfter, 'error');
             return redirect()->route('forgetPassword');
         }
 
