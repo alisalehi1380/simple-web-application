@@ -21,6 +21,13 @@
         <!-- Left Side Nav -->
         <ul class="left-side-navbar d-flex align-items-center mb-0">
             <li class="hide-phone app-search">
+                @php
+                    $carbon = \Carbon\Carbon::now()->setTimezone('+4:30');
+                    $date  = \verta()->format('%d %B %Y');
+                    $hours = $carbon->format('H');
+                    $min   = $carbon->format('i');
+                    $sec   = $carbon->format('s');
+                @endphp
                 <span>{{ $date }}</span><br>
                 <div class="dashboard-clock ltr">
                     <ul class="d-flex align-items-center justify-content-end">

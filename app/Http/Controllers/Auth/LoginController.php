@@ -27,7 +27,7 @@ class LoginController extends Controller
             return redirect()->route('register');
         }
         toast(SweetAlertToast::loginSuccess, 'success');
-        return redirect()->route('user.panel');
+        return redirect()->route('panel.user');
     }
 
     // login by Google

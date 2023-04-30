@@ -18,4 +18,32 @@ class UserPanelController extends Controller
             'date'  => \verta()->format('%d %B %Y'),
         ]);
     }
+
+    public function createArticle() //todo createArticleRequest $request
+    {
+
+//        $read_time = $this->reading_time($request->description);
+        $persian_date = verta(Carbon::now())->format('Y-n-j');
+
+//        Article::create([
+//            'title'        => $request->title,
+////            'slug'       => $request->slugable, //todo add package
+//            'summery'      => $request->summery,
+//            'description'  => $request->description,
+//            'image'        => $request->image,
+//            'read_time'    => $read_time, //todo
+//            'persian_date' => $persian_date, //todo
+//            'tags'         => $request->tags,
+//        ]);
+
+
+        return view('Panel.User.Articles.createArticle');
+    }
+
+    private function reading_time($content)
+    {
+        $word_per_minute = 200;
+        $words = count(explode(" ", strip_tags($content)));
+        return ceil($words / $word_per_minute);
+    }
 }

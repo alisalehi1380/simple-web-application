@@ -49,13 +49,14 @@
     </div>
 </div>
 
+
 <div class="ecaps-page-wrapper">
     @include('Panel.Layouts.SideNav.Nav')
     <div class="ecaps-page-content">
         @include('Panel.Layouts.Header.header')
         <div class="main-content">
             @include('Panel.Layouts.BreadCrumb.breadcrumb')
-            @include('Panel.Layouts.Contents.contents')
+            @yield('content')
         </div>
     </div>
 </div>

@@ -1,14 +1,13 @@
 <?php
 
-use App\Http\Controllers\Dashboard\UserPanel\UserPanelController;
+use App\Http\Controllers\Website\Weblog\WeblogController;
 use Illuminate\Support\Facades\Route;
 
 
+Route::group([''], function () {
+    Route::get('laravel/weblog', [WeblogController::class, 'index'])->name('weblog');
 
-
-//Panel
-Route::middleware('auth')->group(function () {
-Route::get('panel/user', [UserPanelController::class, 'index'])->name('panel.user');
+});
 
 
 //    Route::middleware('admin')->group(function () { //todo create middleware 'Admin'
@@ -20,17 +19,12 @@ Route::get('panel/user', [UserPanelController::class, 'index'])->name('panel.use
 //Route::get('/', [websiteController::class , 'index'])->name('website');
 
 
-
-//test
-Route::get('test', [LoginController::class, 'test'])->name('test');
-
-
-
-
-
-
-
-
+//================= test =================
+//Route::get('test', [LoginController::class, 'test'])->name('test');
+//Route::get('testali', function (){
+//   toast( SweetAlertToast::loginSuccess, 'success' );
+//    return view('Auth.login');
+//});
 
 
 //-------------------------------------------------------------------------------------------------------------------------
