@@ -24,11 +24,11 @@
                 <span>{{ $date }}</span><br>
                 <div class="dashboard-clock ltr">
                     <ul class="d-flex align-items-center justify-content-end">
-                        <li id="hours">12</li>
+                        <li id="hours">{{ $hours }}</li>
                         <li>:</li>
-                        <li id="min">10</li>
+                        <li id="min">{{ $min }}</li>
                         <li>:</li>
-                        <li id="sec">14</li>
+                        <li id="sec">{{ $sec }}</li>
                     </ul>
                 </div>
             </li>
@@ -81,7 +81,7 @@
                         </div>
                         <a href="#" class="dropdown-item"><i class="fa fa-user profile-icon bg-primary" aria-hidden="true"></i> پروفایل من</a>
                         <a href="#" class="dropdown-item"><i class="fa fa-key profile-icon bg-info" aria-hidden="true"></i> تغییر رمز عبور</a>
-                        <a href="#" class="dropdown-item"><i class="fa fa-sign-out profile-icon bg-danger" aria-hidden="true"></i> خروج از سیستم</a>
+                        <a href="{{ route('logout') }}" class="dropdown-item"><i class="fa fa-sign-out profile-icon bg-danger" aria-hidden="true"></i> خروج از سیستم</a>
                     </div>
                 </div>
             </li>

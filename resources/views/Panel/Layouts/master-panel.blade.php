@@ -84,6 +84,7 @@
 <script src="{{ asset('Assets/Panel/Assets/js/default-assets/worldlow.js') }}"></script>
 <script src="{{ asset('Assets/Panel/Assets/js/default-assets/radar.js') }}"></script>
 <script src="{{ asset('Assets/Panel/Assets/js/default-assets/dashboard-2.js') }}"></script>
+@include('sweetalert::alert')
 
 @yield('js')
 </body>
