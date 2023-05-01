@@ -56,7 +56,13 @@
         @include('Panel.Layouts.Header.header')
         <div class="main-content">
             @include('Panel.Layouts.BreadCrumb.breadcrumb')
-            @yield('content')
+            <div class="dashboard-area">
+                <div class="container-fluid">
+                    <div class="row">
+                        @yield('content')
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
