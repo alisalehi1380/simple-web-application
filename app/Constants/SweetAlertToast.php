@@ -10,5 +10,6 @@ class SweetAlertToast
     public const notCorrectInterCode = 'کد وارد شده صحیح نیست.';
     public const loginSuccess = 'با موفقیت وارد شدید.';
     public const pleaseFirstSignup = 'لطفا ابتدا ثبت نام کنید';
+    public const createArticleSuccess = 'مقاله با موفقیت ایجاد شد';
 
 }
