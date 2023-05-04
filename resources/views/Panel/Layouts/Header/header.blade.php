@@ -22,7 +22,7 @@
         <ul class="left-side-navbar d-flex align-items-center mb-0">
             <li class="hide-phone app-search">
                 @php
-                    $carbon = \Carbon\Carbon::now()->setTimezone('+4:30');
+                    $carbon = \Carbon\Carbon::now();
                     $date  = \verta()->format('%d %B %Y');
                     $hours = $carbon->format('H');
                     $min   = $carbon->format('i');

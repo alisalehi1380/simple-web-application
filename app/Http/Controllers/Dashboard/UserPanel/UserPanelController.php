@@ -7,10 +7,9 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Article\storeArticleRequest;
 use App\Models\Article;
 use Carbon\Carbon;
+use Cviebrock\EloquentSluggable\Services\SlugService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\File;
-use Illuminate\Support\Facades\Storage;
-use Intervention\Image\Facades\Image;
+use Illuminate\Support\Facades\Auth;
 
 class UserPanelController extends Controller
 {
@@ -35,28 +34,25 @@ class UserPanelController extends Controller
 
     public function articleStore(storeArticleRequest $request)
     {
-        $read_time = $this->reading_time($request->description);
+        $read_time = $this->readingTime($request->description);
         $persian_date = verta(carbon::now())->format('y-n-j');
-
-//        ------------------------- todo install slugable package -------------------------
         $imageName = $this->imageRename($request);
         $this->imageSaveToStorage($request, $imageName);
-//        ----------------------------------------------------------------------------------
-
-        dd('end');
+        $slug = SlugService::createSlug(Article::class, 'slug', "$request->title");
 
         article::create([
+            'user_id'      => Auth::id(),
             'title'        => $request->title,
-////            'slug'       => $request->slugable, //todo add slug package
+            'slug'         => $slug,
             'summery'      => $request->summery,
             'description'  => $request->description,
-//            'image'        => $imagename, //todo handle slug package
+            'image'        => $imageName,
             'read_time'    => $read_time,
             'persian_date' => $persian_date,
 //            'tags'         => $request->tags,
         ]);
 
-        toast(sweetalerttoast::createarticlesuccess, 'success');
+        toast(sweetalerttoast::createArticleSuccess, 'success');
         return redirect()->back();
     }
 
@@ -64,7 +60,7 @@ class UserPanelController extends Controller
      * @param string $content
      * @return int
      */
-    private function reading_time(string $content): int
+    private function readingTime(string $content): int
     {
         $word_per_minute = 200;
         $words = count(explode(" ", strip_tags($content)));
@@ -79,8 +75,8 @@ class UserPanelController extends Controller
     private function imageRename(Request $request): string
     {
         $clientOriginalExtension = $request->file('image')->getclientoriginalextension();
-        $slug = $request->title; //todo install slugable package
-        $carbon = Carbon::now()->setTimezone("+3:30");
+        $slug = SlugService::createSlug(Article::class, 'slug', "$request->title");
+        $carbon = Carbon::now();
         $now = $carbon->getTimestamp();
         $time = $carbon->format('His');
         $date = verta($now)->format('Y_m_d');
