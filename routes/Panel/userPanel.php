@@ -1,15 +1,20 @@
 <?php
 
-
-
-//Panel
-use App\Http\Controllers\Dashboard\UserPanel\UserPanelController;
+use App\Http\Controllers\panel\UserPanel\UserPanelController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('auth')->group(function () {
-    Route::get('user/panel', [UserPanelController::class, 'index'])->name('panel.user');
-    Route::get('user/panel/articles', [UserPanelController::class, 'articleLists'])->name('panel.user.article.list');
-    Route::get('user/panel/articles/create', [UserPanelController::class, 'articleCreate'])->name('panel.user.article.create');
-    Route::post('user/panel/articles/store', [UserPanelController::class, 'articleStore'])->name('panel.user.article.store');
-//    Route::get('user/panel/articles/show/{slug}', [UserPanelController::class, ''])->name('panel.user.article.show');
+    Route::get('user/panel', [UserPanelController::class, 'index'])->name('userPanel');
+
+//------------------------------------------------------------- List Articles -------------------------------------------------------------
+    Route::get('user/panel/articles', [UserPanelController::class, 'articleLists'])->name('userPanel.article.list');
+    Route::get('user/panel/articles/create', [UserPanelController::class, 'articleCreate'])->name('userPanel.article.create');
+    Route::post('user/panel/articles/store', [UserPanelController::class, 'articleStore'])->name('userPanel.article.store');
+//    Route::get('user/panel/articles/show/{slug}', [UserPanelController::class, ''])->name('userPanel.article.show');
+
+
+//------------------------------------------------------------- Settings -------------------------------------------------------------
+    //change-password
+    Route::view('change-password', 'Panel.User.Settings.ChangePassword.changePassword')->name('userPanel.setting.changePassword');
+    Route::post('change-password', [UserPanelController::class, 'updatePassword'])->name('userPanel.setting.updatePassword');
 });

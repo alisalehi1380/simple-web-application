@@ -1,15 +1,19 @@
 <?php
 
-namespace App\Http\Controllers\Dashboard\UserPanel;
+namespace App\Http\Controllers\panel\UserPanel;
 
 use App\Constants\SweetAlertToast;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Article\storeArticleRequest;
+use App\Http\Requests\UserPanel\changePasswordRequest;
+use App\Http\Requests\UserPanel\CheckPasswordInputRequest;
 use App\Models\Article;
+use App\Models\User;
 use Carbon\Carbon;
 use Cviebrock\EloquentSluggable\Services\SlugService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 
 class UserPanelController extends Controller
 {
@@ -53,6 +57,25 @@ class UserPanelController extends Controller
         ]);
 
         toast(sweetalerttoast::createArticleSuccess, 'success');
+        return redirect()->back();
+    }
+
+    public function updatePassword(changePasswordRequest $request)
+    {
+        $user_id = \auth()->id();
+        $getUser = User::where('id', $user_id)->first();
+        $passwordInDatabase = $getUser->password;
+        $old_password = $request->input('old_password');
+        $new_password = $request->input('new_password');
+
+        if (Hash::check($old_password, $passwordInDatabase)) {
+            $getUser->update([
+                'password' => bcrypt($new_password)
+            ]);
+            toast(SweetAlertToast::changePasswordSuccess, 'success');
+            return redirect()->route('userPanel');
+        }
+        toast(SweetAlertToast::incorrectPassword, 'error');
         return redirect()->back();
     }
 

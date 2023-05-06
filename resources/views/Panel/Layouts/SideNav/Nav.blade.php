@@ -1,7 +1,7 @@
 <div class="ecaps-sidemenu-area">
     <!-- Desktop Logo -->
     <div class="ecaps-logo">
-        <a href="{{ route('panel.user') }}">
+        <a href="{{ route('userPanel') }}">
             <img class="desktop-logo" src="{{ asset('Assets/Panel/Assets/img/companyName.png') }}" alt="نام کمپانی شما"> {{-- //todo company name --}}
             <img class="small-logo" src="{{ asset('Assets/Panel/Assets/img/companyName.png') }}" alt="نام کمپانی شما"></a> {{-- //todo company name --}}
     </div>
@@ -15,23 +15,34 @@
             <!-- Sidebar Menu -->
             <nav>
                 <ul class="sidebar-menu" data-widget="tree">
-                    <li class="{{ request()->routeIs('panel.user')?'active':'' }}"><a href="#"><i class="zmdi zmdi-view-dashboard"></i><span>داشبورد</span></a></li>
+                    <li class="{{ request()->routeIs('userPanel')?'active':'' }}"><a href="{{ route('userPanel') }}"><i class="zmdi zmdi-view-dashboard"></i><span>داشبورد</span></a></li>
 
                     <li class="treeview {{request()->routeIs([
-                                                            'panel.user.article.list',
-                                                            'panel.user.article.create',
-                                                            ])?'active':'' }}">
-
+                                                              'userPanel.article.list',
+                                                              'userPanel.article.create',
+                                                             ])?'active':'' }}">
                         <a href="#"><i class="fa fa-newspaper-o"></i><span>مقالات</span><i class="fa fa-angle-left"></i></a>
                         <ul class="treeview-menu">
                             <li><a style="{{ request()->routeIs([
-                                                            'panel.user.article.list',
-                                                            'panel.user.article.create'
-                                                            ])?'color:#54c6d0;':'' }}" href="{{ route('panel.user.article.list') }}">لیست مقالات</a></li>
-                            <li><a class="active" href="#">دسته بندی</a></li>
-                            <li><a href="#">برچسب</a></li>
+                                                                 'userPanel.article.list',
+                                                                 'userPanel.article.create'
+                                                                 ])?'color:#54c6d0;':'' }}" href="{{ route('userPanel.article.list') }}">لیست مقالات</a></li>
+                            {{--                            <li><a class="active" href="#">دسته بندی</a></li>--}}
+                            {{--                            <li><a href="#">برچسب</a></li>--}}
                         </ul>
                     </li>
+
+                    <li class="treeview {{ request()->routeIs([
+                                                                'userPanel.setting.changePassword',
+                                                               ])? 'active':''}}">
+                        <a href="#"><i style="color: #EEEEEE;font-size: 19px;" class="fa fa-cog"></i> <span>تنظیمات</span> <i class="fa fa-angle-left"></i></a>
+                        <ul class="treeview-menu">
+                            <li><a style="{{ request()->routeIs([
+                                                                 'userPanel.setting.changePassword'
+                                                                ])? 'color:#54c6d0;':'' }}" href="{{ route('userPanel.setting.changePassword') }}">تفییر رمز عبور</a></li>
+                        </ul>
+                    </li>
+
 
                     {{--                    <li class="treeview">--}}
                     {{--                        <a href="#"><i class="fa fa-file-image-o"></i> <span>رسانه ها</span> <i class="fa fa-angle-left"></i></a>--}}
