@@ -6,7 +6,7 @@ use App\Constants\SweetAlertToast;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\forgetPasswordConfirmTokenRequest;
 use App\Http\Requests\Auth\forgetPasswordRequest;
-use App\Models\Tokens;
+use App\Models\Token;
 use App\Models\User;
 use Carbon\Carbon;
 
@@ -14,7 +14,7 @@ class ForgetPasswordController extends Controller
 {
     public function sendSMS(forgetPasswordRequest $request)
     {
-        $phone_number = $request->phone_number;
+        $phone_number = $request->input('phone_number');
         $cache = cache()->get('forgetPassword-' . $phone_number);
 
         if (isset($cache) && $cache > 4) {
@@ -23,7 +23,7 @@ class ForgetPasswordController extends Controller
         }
 
         $user = $this->getUser($request);
-        $this->tokenGenerator(10000, 99999, new Tokens(), $user);
+        $this->tokenGenerator(10000, 99999, new Token(), $user);
         session()->put('phone_number', $phone_number);
         cache()->put('forgetPassword-' . $phone_number, 0, now()->addMinutes(30));
         cache()->increment('forgetPassword-' . $phone_number, 1);
@@ -38,7 +38,7 @@ class ForgetPasswordController extends Controller
 
         if ($cache < 4) {
             $user = User::where('phone_number', $phone_number)->first();
-            $findTokenInDatabase = Tokens::where('user_id', $user->id)->where('type', 'forget_password')->latest()->first();
+            $findTokenInDatabase = Token::where('user_id', $user->id)->where('type', 'forget_password')->latest()->first();
             $tokenInDatabase = $findTokenInDatabase->token;
             $token_code = $request->input('token');
             if ($tokenInDatabase === $token_code) {
@@ -49,7 +49,7 @@ class ForgetPasswordController extends Controller
                     auth()->login($user);
                     session()->forget('phone_number');
                     cache()->forget('forgetPassword-' . $phone_number);
-                    Tokens::where('token', $tokenInDatabase)->delete();
+                    Token::where('token', $tokenInDatabase)->delete();
 //                    return redirect()->route('user.panel'); //todo
                 } else {
                     toast(SweetAlertToast::expireTimeToken, 'error');
