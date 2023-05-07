@@ -3,6 +3,7 @@
 
 // Auth
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Auth\phoneNumberConfirmController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\ForgetPasswordController;
 use Illuminate\Support\Facades\Route;
@@ -25,6 +26,11 @@ Route::middleware('guest')->group(function () {
     Route::post('forget-password/send-sms', [ForgetPasswordController::class, 'sendSMS'])->name('forgetPassword.sendSMS');
     Route::view('forget-password/confirm', 'Auth.forgetPassword-interCode')->name('forgetPassword.interCode')->middleware(['RedirectIfNotEnterPhoneNumber']);
     Route::post('forget-password/confirm', [ForgetPasswordController::class, 'confirmCode'])->name('forgetPassword.confirmCode');
+
+//phone-number confirm
+    Route::get('phone-number/confirm', [phoneNumberConfirmController::class, 'index'])->name('phoneNumber')->middleware('checkPhoneNumberSession');
+    Route::post('phone-number/confirm', [phoneNumberConfirmController::class, 'confirmCode'])->name('phoneNumber.confirm');
+
 });
 
 //logout

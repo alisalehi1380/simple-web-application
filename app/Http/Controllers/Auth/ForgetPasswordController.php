@@ -23,7 +23,7 @@ class ForgetPasswordController extends Controller
         }
 
         $user = $this->getUser($request);
-        $this->tokenGenerator(10000, 99999, new Token(), $user);
+        \App\Services\token::tokenGenerator(10000, 99999, Token::class, "$user->id", 'forget-password');
         session()->put('phone_number', $phone_number);
         cache()->put('forgetPassword-' . $phone_number, 0, now()->addMinutes(30));
         cache()->increment('forgetPassword-' . $phone_number, 1);
@@ -52,7 +52,7 @@ class ForgetPasswordController extends Controller
                     Token::where('token', $tokenInDatabase)->delete();
 //                    return redirect()->route('user.panel'); //todo
                 } else {
-                    toast(SweetAlertToast::expireTimeToken, 'error');
+                    toast(SweetAlertToast::expireTokenTime, 'error');
                     session()->forget('phone_number');
                     return redirect()->route('forgetPassword');
                 }
@@ -67,22 +67,22 @@ class ForgetPasswordController extends Controller
 
     }
 
-    /**
-     * @param string $min
-     * @param string $max
-     * @param object $table
-     * @param User $user
-     * @return void
-     */
-    private function tokenGenerator($min, $max, $table, User $user): void
-    {
-        $token = mt_rand($min, $max);
-        $table::create([
-            'user_id' => $user->id,
-            'token'   => $token,
-            'type'    => 'forget_password'
-        ]);
-    }
+//    /**
+//     * @param string $min
+//     * @param string $max
+//     * @param object $table
+//     * @param User $user
+//     * @return void
+//     */
+//    private function tokenGenerator($min, $max, $table, User $user): void
+//    {
+//        $token = mt_rand($min, $max);
+//        $table::create([
+//            'user_id' => $user->id,
+//            'token'   => $token,
+//            'type'    => 'forget_password'
+//        ]);
+//    }
 
     /**
      * check phone_number user verified & return user
