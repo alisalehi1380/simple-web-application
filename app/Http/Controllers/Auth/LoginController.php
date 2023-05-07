@@ -9,6 +9,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Laravel\Socialite\Facades\Socialite;
+use function Symfony\Component\String\b;
 
 class LoginController extends Controller
 {
@@ -21,13 +22,20 @@ class LoginController extends Controller
     public function login(LoginRequest $request)
     {
         $credentials = $this->credentials($request);
+        $existsInDatabase = $this->dataLoginExistsInDatabase($credentials);
 
-        if (!Auth::attempt($credentials)) {
+        if ($existsInDatabase) {
+            if (Auth::attempt($credentials)) {
+                toast(SweetAlertToast::loginSuccess, 'success');
+                return redirect()->route('userPanel');
+            } else {
+                toast('رمز وارد شده اشتباه است!', 'error');
+                return redirect()->back();
+            }
+        } else {
             toast(SweetAlertToast::pleaseFirstSignup, 'warning');
             return redirect()->route('register');
         }
-        toast(SweetAlertToast::loginSuccess, 'success');
-        return redirect()->route('userPanel');
     }
 
     // login by Google
@@ -50,39 +58,47 @@ class LoginController extends Controller
         return redirect()->route('register');
     }
 
-    // test
-    public function test(Request $request)
-    {
-//        $request->validate([
-//            'data_Login' => 'required | email | exists:users,email',
-//            'password' => 'required'
-//        ]);
-        return view('Auth.login');
-    }
-
-
-    /**
-     * set credentials for login [phoneNumber or Email]
-     * @param Request $validatedRequest
-     * @return array|void
-     */
-    private function credentials(Request $validatedRequest)
-    {
-        $data_login = $validatedRequest->input('data_login');
-        $password = $validatedRequest->input('password');
-
-        if (str_starts_with($data_login, '09')) {
-            return ['phoneNumber' => $data_login, 'password' => $password];
-        } elseif (filter_var($data_login, FILTER_VALIDATE_EMAIL)) {
-            return ['email' => $data_login, 'password' => $password];
-        }
-    }
-
-
     public function logout()
     {
         session()->flush();
         \auth()->logout();
         return redirect()->route('login');
+    }
+
+
+
+
+
+//    ------------------------------------ custom function ------------------------------------
+
+    /**
+     * set credentials for login [phone_number or Email]
+     * @param Request $validatedRequest
+     * @return array
+     */
+    private function credentials(Request $validatedRequest) : array
+    {
+        $data_login = $validatedRequest->input('data_login');
+        $password = $validatedRequest->input('password');
+
+        if (str_starts_with($data_login, '09')) {
+            return ['phone_number' => $data_login, 'password' => $password];
+        } elseif (filter_var($data_login, FILTER_VALIDATE_EMAIL)) {
+            return ['email' => $data_login, 'password' => $password];
+        }
+    }
+
+    /**
+     * check email or phone user exist in database or not
+     * @param array $credentials
+     * @return bool
+     */
+    private function dataLoginExistsInDatabase(array $credentials): bool
+    {
+        if (isset($credentials['email'])) {
+            return User::where('email', $credentials['email'])->exists();
+        } elseif (isset($credentials['phone_number'])) {
+            return User::where('phone_number', $credentials['phone_number'])->exists();
+        }
     }
 }
