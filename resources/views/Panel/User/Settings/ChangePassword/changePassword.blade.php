@@ -17,7 +17,7 @@
                 <div>
 {{--                    <h2 class="text-center" style="padding-bottom: 1.5rem; font-size: 20px">رمزعبور فعلی ت رو وارد کن</h2>--}}
 
-                    <form method="post" action="{{ route('userPanel.setting.updatePassword') }}">
+                    <form method="post" action="{{ route('userPanel.settings.updatePassword') }}">
                         @csrf
                         <div class="mb-3">
                             <label>پسورد فعلی:</label>
