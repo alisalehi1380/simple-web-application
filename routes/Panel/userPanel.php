@@ -15,6 +15,10 @@ Route::middleware('auth')->group(function () {
 
 //------------------------------------------------------------- Settings -------------------------------------------------------------
     //change-password
-    Route::view('change-password', 'Panel.User.Settings.ChangePassword.changePassword')->name('userPanel.setting.changePassword');
-    Route::post('change-password', [UserPanelController::class, 'updatePassword'])->name('userPanel.setting.updatePassword');
+    Route::view('change-password', 'Panel.User.Settings.ChangePassword.changePassword')->name('userPanel.settings.changePassword');
+    Route::post('change-password', [UserPanelController::class, 'updatePassword'])->name('userPanel.settings.updatePassword');
+
+    //change-profile
+    Route::get('change-profile', [UserPanelController::class, 'changeProfile'])->name('userPanel.settings.changeProfile');
+    Route::post('change-profile', [UserPanelController::class, 'updateProfile'])->name('userPanel.settings.updateProfile');
 });

@@ -5,8 +5,8 @@ namespace App\Http\Controllers\panel\UserPanel;
 use App\Constants\SweetAlertToast;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Article\storeArticleRequest;
-use App\Http\Requests\UserPanel\changePasswordRequest;
-use App\Http\Requests\UserPanel\CheckPasswordInputRequest;
+use App\Http\Requests\UserPanel\Settings\changePasswordRequest;
+use App\Http\Requests\UserPanel\Settings\changeProfileRequest;
 use App\Models\Article;
 use App\Models\User;
 use Carbon\Carbon;
@@ -20,14 +20,16 @@ class UserPanelController extends Controller
     public function index()
     {
         return view('Panel.User.userPanel', [
-            'date' => \verta()->format('%d %B %Y'),
+            'date'                  => \verta()->format('%d %B %Y'),
+            'PhoneNumberIsVerified' => User::where('id', auth()->id())->where('phone_number_verified_at', true)->exists(),
+
         ]);
     }
 
     public function articleLists()
     {
         return view('Panel.User.Articles.articleList', [
-            'articles' => Article::select('title', 'summery', 'tags', 'image', 'persian_date', 'slug')->get(),
+            'articles' => Article::where('id', \auth()->id())->select('title', 'summery', 'tags', 'image', 'persian_date', 'slug')->get(),
         ]);
     }
 
@@ -41,7 +43,7 @@ class UserPanelController extends Controller
         $read_time = $this->readingTime($request->description);
         $persian_date = verta(carbon::now())->format('y-n-j');
         $imageName = $this->imageRename($request);
-        $this->imageSaveToStorage($request, $imageName);
+        $this->imageArticleSaveToStorage($request, $imageName);
         $slug = SlugService::createSlug(Article::class, 'slug', "$request->title");
 
         article::create([
@@ -79,6 +81,31 @@ class UserPanelController extends Controller
         return redirect()->back();
     }
 
+    public function changeProfile()
+    {
+        return view('Panel.User.Settings.ChangeProfile.changeProfile', [
+            'userData' => User::where('id', \auth()->id())->select('first_name', 'last_name', 'email', 'phone_number', 'profile_image')->get(),
+        ]);
+    }
+
+    public function updateProfile(changeProfileRequest $request)
+    {
+
+//        dd($request->all());
+//        $this->saveImageProfile($request);
+
+        User::where('id', \auth()->id())->update([
+            'first_name' => $request->first_name,
+            'last_name'  => $request->last_name,
+//            'email' => $request->email,
+//            'phone_number' => $request->phone_number,
+        ]);
+
+        toast(SweetAlertToast::changeProfileSuccess, 'success');
+        return redirect()->back();
+    }
+
+
     /**
      * @param string $content
      * @return int
@@ -111,10 +138,24 @@ class UserPanelController extends Controller
      * @param string $imageName
      * @return void
      */
-    private function imageSaveToStorage(Request $request, string $imageName): void
+    private function imageArticleSaveToStorage(Request $request, string $imageName): void
     {
         $request->file('image')->storeAs('public/articles/' . auth()->id(), $imageName);
     }
+
+//    /**
+//     * @param Request $request
+//     * @return void
+//     */
+//    private function saveImageProfile(Request $request): void
+//    {
+//        if ($request->hasFile('profile_image')) {
+//            //todo correct address save to storage
+//            User::update([
+//                'profile_image' => $request->file('profile_image')
+//            ]);
+//        }
+//    }
 }
 
 

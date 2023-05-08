@@ -19,10 +19,11 @@ return new class extends Migration {
             $table->string('email')->unique();
             $table->boolean('email_verified_at')->nullable();
             $table->string('phone_number')->nullable();
-            $table->boolean('phone_number_verified_at')->nullable();
+            $table->boolean('phone_number_verified_at')->default(false);
             $table->string('password');
             $table->string('register_ip')->nullable();
             $table->string('activation_token')->nullable();
+            $table->string('profile_image')->nullable();
             $table->rememberToken();
             $table->timestamps();
         });

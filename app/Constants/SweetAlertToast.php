@@ -15,6 +15,7 @@ class SweetAlertToast
     public const loginSuccess = 'با موفقیت وارد شدید.';
     public const createArticleSuccess = 'مقاله با موفقیت ایجاد شد.';
     public const changePasswordSuccess = 'رمز شما با موفقیت تغییر کرد.';
+    public const changeProfileSuccess = 'پروفایل شما با موفقیت تغییر کرد.';
 
 
 //--------------------------------------- warning (please) ---------------------------------------

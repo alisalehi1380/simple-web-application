@@ -55,6 +55,7 @@
     <div class="ecaps-page-content">
         @include('Panel.Layouts.Header.header')
         <div class="main-content">
+            @yield('alert')
             @include('Panel.Layouts.BreadCrumb.breadcrumb')
             <div class="dashboard-area">
                 <div class="container-fluid">

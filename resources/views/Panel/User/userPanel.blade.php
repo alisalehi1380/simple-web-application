@@ -1,4 +1,37 @@
 @extends('Panel.Layouts.master-panel')
+
+@section('style')
+    <style>
+        a.alertConfirm:hover {
+            color: #283e59 !important;
+            border-bottom: 1px solid #283e59;
+
+        }
+
+        a.alertConfirm {
+            margin-right: 15px;
+            color: white;
+            border-bottom: 1px solid white;
+        }
+    </style>
+@endsection
+@section('alert')
+    @if(!$PhoneNumberIsVerified)
+        <div class="alert alert-warning alert-dismissible fade show" role="alert"
+             style="margin: 0 15px 15px 15px !important;">
+            <button type="button" class="close" data-dismiss="alert" aria-label="بستن" style="top: 4px!important;">
+                <span aria-hidden="true">×</span>
+            </button>
+            <span>
+    شما<strong> شماره موبایل </strong>خود را تایید نکرده اید!
+    </span>
+            <span>
+        <a class="alertConfirm" href="#">تایید میکنم</a> {{-- //todo --}}
+    </span>
+        </div>
+    @endif
+@endsection
+
 @section('content')
     <div class="col-md-4 box-margin">
         <div class="card">
@@ -87,10 +120,12 @@
                 <!-- Nav Tabs -->
                 <ul class="nav total-earnings nav-tabs mb-0" role="tablist">
                     <li class="nav-item">
-                        <a class="nav-link show" id="today-users-tab" data-toggle="tab" href="#today-users" role="tab" aria-controls="today-users" aria-selected="false">در حال پردازش</a>
+                        <a class="nav-link show" id="today-users-tab" data-toggle="tab" href="#today-users" role="tab"
+                           aria-controls="today-users" aria-selected="false">در حال پردازش</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link mr-0 active" id="month-users-tab" data-toggle="tab" href="#month-users" role="tab" aria-controls="month-users" aria-selected="true">آماده ارسال</a>
+                        <a class="nav-link mr-0 active" id="month-users-tab" data-toggle="tab" href="#month-users"
+                           role="tab" aria-controls="month-users" aria-selected="true">آماده ارسال</a>
                     </li>
                 </ul>
             </div>
@@ -141,7 +176,8 @@
 
                     </div>
 
-                    <div class="tab-pane fade active show" id="month-users" role="tabpanel" aria-labelledby="month-users-tab">
+                    <div class="tab-pane fade active show" id="month-users" role="tabpanel"
+                         aria-labelledby="month-users-tab">
                         <div class="table-responsive" id=" ">
                             <table class="table table-hover">
                                 <thead>

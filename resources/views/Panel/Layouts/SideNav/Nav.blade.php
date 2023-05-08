@@ -33,13 +33,17 @@
                     </li>
 
                     <li class="treeview {{ request()->routeIs([
-                                                                'userPanel.setting.changePassword',
+                                                                'userPanel.settings.changePassword',
+                                                                'userPanel.settings.changeProfile',
                                                                ])? 'active':''}}">
                         <a href="#"><i style="color: #EEEEEE;font-size: 19px;" class="fa fa-cog"></i> <span>تنظیمات</span> <i class="fa fa-angle-left"></i></a>
                         <ul class="treeview-menu">
                             <li><a style="{{ request()->routeIs([
-                                                                 'userPanel.setting.changePassword'
-                                                                ])? 'color:#54c6d0;':'' }}" href="{{ route('userPanel.setting.changePassword') }}">تفییر رمز عبور</a></li>
+                                                                 'userPanel.settings.changeProfile'
+                                                                ])? 'color:#54c6d0;':'' }}" href="{{ route('userPanel.settings.changeProfile') }}">پروفایل</a></li>
+                            <li><a style="{{ request()->routeIs([
+                                                                 'userPanel.settings.changePassword'
+                                                                ])? 'color:#54c6d0;':'' }}" href="{{ route('userPanel.settings.changePassword') }}">تفییر رمز عبور</a></li>
                         </ul>
                     </li>
 

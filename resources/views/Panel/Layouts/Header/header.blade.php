@@ -82,12 +82,15 @@
                             </div>
                             <!-- Profile Text -->
                             <div class="profile-text">
-                                <h6>نام کاربر</h6>
-                                <span>توسعه دهنده</span>
+                                @php($userData = \App\Models\User::where('id' , \auth()->id())->select('first_name' , 'last_name')->get())
+                                @foreach($userData as $user)
+                                    <h6>{{ $user->first_name .' '.$user->last_name }}</h6>
+                                    <span>کاربر</span> {{-- //todo --}}
+                                @endforeach
                             </div>
                         </div>
-                        <a href="#" class="dropdown-item"><i class="fa fa-user profile-icon bg-primary" aria-hidden="true"></i> پروفایل من</a>
-                        <a href="#" class="dropdown-item"><i class="fa fa-key profile-icon bg-info" aria-hidden="true"></i> تغییر رمز عبور</a>
+                        <a href="{{ route('userPanel.settings.changeProfile') }}" class="dropdown-item"><i class="fa fa-user profile-icon bg-primary" aria-hidden="true"></i> پروفایل من</a>
+                        <a href="{{ route('userPanel.settings.changePassword') }}" class="dropdown-item"><i class="fa fa-key profile-icon bg-info" aria-hidden="true"></i> تغییر رمز عبور</a>
                         <a href="{{ route('logout') }}" class="dropdown-item"><i class="fa fa-sign-out profile-icon bg-danger" aria-hidden="true"></i> خروج از سیستم</a>
                     </div>
                 </div>
