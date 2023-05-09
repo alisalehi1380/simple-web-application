@@ -6,11 +6,11 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth')->group(function () {
     Route::get('user/panel', [UserPanelController::class, 'index'])->name('userPanel');
 
-//------------------------------------------------------------- List Articles -------------------------------------------------------------
-    Route::get('user/panel/articles', [UserPanelController::class, 'articleLists'])->name('userPanel.article.list');
-    Route::get('user/panel/articles/create', [UserPanelController::class, 'articleCreate'])->name('userPanel.article.create');
-    Route::post('user/panel/articles/store', [UserPanelController::class, 'articleStore'])->name('userPanel.article.store');
-//    Route::get('user/panel/articles/show/{slug}', [UserPanelController::class, ''])->name('userPanel.article.show');
+//------------------------------------------------------------- Articles -------------------------------------------------------------
+    Route::get('user/panel/articles', [UserPanelController::class, 'articleLists'])->name('userPanel.articles.list');
+    Route::get('user/panel/articles/create', [UserPanelController::class, 'articleCreate'])->name('userPanel.articles.create');
+    Route::post('user/panel/articles/store', [UserPanelController::class, 'articleStore'])->name('userPanel.articles.store');
+//    Route::get('user/panel/articles/show/{slug}', [UserPanelController::class, ''])->name('userPanel.articles.show');
 
 
 //------------------------------------------------------------- Settings -------------------------------------------------------------

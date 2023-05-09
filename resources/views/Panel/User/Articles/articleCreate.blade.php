@@ -11,7 +11,7 @@
             <hr>
             <div class="row">
                 <div class="col-sm-12 col-xs-12">
-                    <form method="post" action="{{ route('userPanel.article.store') }}" enctype="multipart/form-data">
+                    <form method="post" action="{{ route('userPanel.articles.store') }}" enctype="multipart/form-data">
                         @csrf
                         <div class="form-group">
                             <label for="title">عنوان مقاله:</label>

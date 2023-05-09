@@ -18,15 +18,15 @@
                     <li class="{{ request()->routeIs('userPanel')?'active':'' }}"><a href="{{ route('userPanel') }}"><i class="zmdi zmdi-view-dashboard"></i><span>داشبورد</span></a></li>
 
                     <li class="treeview {{request()->routeIs([
-                                                              'userPanel.article.list',
-                                                              'userPanel.article.create',
+                                                              'userPanel.articles.list',
+                                                              'userPanel.articles.create',
                                                              ])?'active':'' }}">
                         <a href="#"><i class="fa fa-newspaper-o"></i><span>مقالات</span><i class="fa fa-angle-left"></i></a>
                         <ul class="treeview-menu">
                             <li><a style="{{ request()->routeIs([
-                                                                 'userPanel.article.list',
-                                                                 'userPanel.article.create'
-                                                                 ])?'color:#54c6d0;':'' }}" href="{{ route('userPanel.article.list') }}">لیست مقالات</a></li>
+                                                                 'userPanel.articles.list',
+                                                                 'userPanel.articles.create'
+                                                                 ])?'color:#54c6d0;':'' }}" href="{{ route('userPanel.articles.list') }}">لیست مقالات</a></li>
                             {{--                            <li><a class="active" href="#">دسته بندی</a></li>--}}
                             {{--                            <li><a href="#">برچسب</a></li>--}}
                         </ul>

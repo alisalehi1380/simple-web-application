@@ -7,7 +7,7 @@
         <div class="card">
             <div class="card-body">
                 <h4 class="card-title" style="">لیست مقالات</h4>
-                <a href="{{ route('userPanel.article.create') }}" class="btn btn-warning mb-2 mr-2" style="float:left;margin-top:-37px;">
+                <a href="{{ route('userPanel.articles.create') }}" class="btn btn-warning mb-2 mr-2" style="float:left;margin-top:-37px;">
                     <i class="fa fa-plus-square"></i> افزودن
                 </a>
                 <div class="table-responsive">
@@ -30,10 +30,10 @@
                                     <a href="#" class="btn btn-danger">حذف</a>
                                     <a href="#" class="btn btn-success">ویرایش</a>
                                 </td>
-                                <td style="width: 20%"><a href="#">{{ $article->title }}</a></td> {{--todo {{ route('userPanel.article.show' , $article->slug ?? '') }} --}}
+                                <td style="width: 20%"><a href="#">{{ $article->title }}</a></td> {{--todo {{ route('userPanel.articles.show' , $article->slug ?? '') }} --}}
                                 <td style="width: 30%">{{ $article->summery }}</td>
                                 <td style="width: 10%">
-                                    <a href="{{ asset($article->image) }}"><img style="max-height: 60px;width: auto;" src="{{ asset($article->image) }}"></a>
+                                    <a href="{{ url($article->image) }}"><img style="max-height: 60px;width: auto;" src="{{ url($article->image) }}" alt="{{ $article->slug }}"></a>
                                 </td>
                                 <td style="width: 10%">
                                     @foreach (json_decode($article->tags) as $tag)
