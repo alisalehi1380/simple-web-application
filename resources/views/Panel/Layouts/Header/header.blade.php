@@ -70,31 +70,33 @@
                 </div>
             </li>
 
-            <li class="nav-item dropdown">
-                <button type="button" class="btn dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><img src="{{ asset('Assets/Panel/Assets/img/member-img/3.png') }}" alt=""></button>
-                <div class="dropdown-menu dropdown-menu-right">
-                    <!-- User Profile Area -->
-                    <div class="user-profile-area">
-                        <div class="user-profile-heading">
-                            <!-- Thumb -->
-                            <div class="profile-img">
-                                <img class="chat-img mr-2" src="{{ asset('Assets/Panel/Assets/img/member-img/3.png') }}" alt="">
-                            </div>
-                            <!-- Profile Text -->
-                            <div class="profile-text">
-                                @php($userData = \App\Models\User::where('id' , \auth()->id())->select('first_name' , 'last_name')->get())
-                                @foreach($userData as $user)
+            @php($userData = \App\Models\User::where('id' , \auth()->id())->select('first_name' , 'last_name' , 'profile_image')->get())
+            @foreach($userData as $user)
+                <li class="nav-item dropdown">
+                    <button type="button" class="btn dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <img style="width: 40px;height: 40px;" src="{{ asset('storage/profile_image/'.auth()->id().'/'.$user->profile_image) }}" alt="{{ asset('storage/profile_image/'.auth()->id().'/'.$user->profile_image) }}">
+                    </button>
+                    <div class=" dropdown-menu dropdown-menu-right">
+                        <!-- User Profile Area -->
+                        <div class="user-profile-area">
+                            <div class="user-profile-heading">
+                                <!-- Thumb -->
+                                <div class="profile-img">
+                                    <img class="chat-img mr-2" src="{{ asset('storage/profile_image/'.auth()->id().'/'.$user->profile_image) }}" alt="{{ asset('storage/profile_image/'.auth()->id().'/'.$user->profile_image) }}">
+                                </div>
+                                <!-- Profile Text -->
+                                <div class="profile-text">
                                     <h6>{{ $user->first_name .' '.$user->last_name }}</h6>
                                     <span>کاربر</span> {{-- //todo --}}
-                                @endforeach
+                                </div>
                             </div>
+                            <a href="{{ route('userPanel.settings.changeProfile') }}" class="dropdown-item"><i class="fa fa-user profile-icon bg-primary" aria-hidden="true"></i> پروفایل من</a>
+                            <a href="{{ route('userPanel.settings.changePassword') }}" class="dropdown-item"><i class="fa fa-key profile-icon bg-info" aria-hidden="true"></i> تغییر رمز عبور</a>
+                            <a href="{{ route('logout') }}" class="dropdown-item"><i class="fa fa-sign-out profile-icon bg-danger" aria-hidden="true"></i> خروج از سیستم</a>
                         </div>
-                        <a href="{{ route('userPanel.settings.changeProfile') }}" class="dropdown-item"><i class="fa fa-user profile-icon bg-primary" aria-hidden="true"></i> پروفایل من</a>
-                        <a href="{{ route('userPanel.settings.changePassword') }}" class="dropdown-item"><i class="fa fa-key profile-icon bg-info" aria-hidden="true"></i> تغییر رمز عبور</a>
-                        <a href="{{ route('logout') }}" class="dropdown-item"><i class="fa fa-sign-out profile-icon bg-danger" aria-hidden="true"></i> خروج از سیستم</a>
                     </div>
-                </div>
-            </li>
+                </li>
+            @endforeach
         </ul>
     </div>
 </header>
