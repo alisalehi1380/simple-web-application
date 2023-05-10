@@ -11,12 +11,17 @@ use App\Models\Article;
 use App\Models\User;
 use Carbon\Carbon;
 use Cviebrock\EloquentSluggable\Services\SlugService;
+use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
 class UserPanelController extends Controller
 {
+    /**
+     * return view userPanel
+     * @return View
+     */
     public function index()
     {
         return view('Panel.User.userPanel', [
@@ -32,6 +37,10 @@ class UserPanelController extends Controller
         ]);
     }
 
+    /**
+     * return view articleCreate
+     * @return View
+     */
     public function articleCreate()
     {
         return view('Panel.User.Articles.articleCreate');
@@ -51,7 +60,7 @@ class UserPanelController extends Controller
             'slug'         => $slug,
             'summery'      => $this->DeleteHtmlSpecialChars($request->summery),
             'description'  => $this->DeleteHtmlSpecialChars($request->description),
-            'image'        => $imageName,
+            'image'        => 'storage/articles/'.auth()->id().'/'.$imageName,
             'read_time'    => $read_time,
             'persian_date' => $persian_date,
 //            'tags'         => $request->tags,
@@ -80,18 +89,19 @@ class UserPanelController extends Controller
         return redirect()->back();
     }
 
+    /**
+     * return view changeProfile
+     * @return View
+     */
     public function changeProfile()
     {
         return view('Panel.User.Settings.ChangeProfile.changeProfile', [
-            'userData' => User::where('id', \auth()->id())->select('first_name', 'last_name', 'email', 'phone_number', 'profile_image')->get(),
+            'user' => User::where('id', \auth()->id())->select('first_name', 'last_name', 'email', 'phone_number', 'profile_image')->first(),
         ]);
     }
 
     public function updateProfile(changeProfileRequest $request)
     {
-
-//        dd($request->all());
-
         User::where('id', \auth()->id())->update([
             'first_name' => $request->first_name,
             'last_name'  => $request->last_name,
@@ -106,7 +116,12 @@ class UserPanelController extends Controller
     }
 
 
+
+
+//    ---------------------------------------------------------------------------
+
     /**
+     * delete html tags in content
      * @param $string
      * @return string
      */
@@ -116,6 +131,7 @@ class UserPanelController extends Controller
     }
 
     /**
+     * Calculate the time to read a text
      * @param string $content
      * @return int
      */
@@ -127,7 +143,7 @@ class UserPanelController extends Controller
     }
 
     /**
-     * change file name to
+     * change file name to correct formatting with slug
      * date/time/file_name.format => 1402_02_14_224837_علی-صالحی.PNG
      * @param string $input_name
      * @param $model
@@ -162,7 +178,6 @@ class UserPanelController extends Controller
         }
     }
 
-
     /**
      * change file name to correct formatting
      * date/time/file_name.format => 1402_02_14_224837_file_name.PNG
@@ -182,6 +197,7 @@ class UserPanelController extends Controller
     }
 
     /**
+     * save profile_image to database
      * @param Request $request
      * @return void
      */
@@ -190,13 +206,12 @@ class UserPanelController extends Controller
         if ($request->hasFile('profile_image')) {
             $user = User::where('id', \auth()->id());
             $imagName = $this->correctingFileName($request, 'profile_image', $user->first()->first_name . '_' . $user->first()->last_name);
-            $this->saveImageToStorage('profile_image', $request, 'public/profile_image/' . \auth()->id(), $imagName);
+            $this->saveImageToStorage('profile_image', $request, env('PATH_USER_PROFILE_IMAGE_IN_STORAGE') . \auth()->id(), $imagName);
             $user->update([
-                'profile_image' => $imagName
+                'profile_image' => env('PATH_USER_PROFILE_IMAGE_IN_DATABASE').auth()->id().'/'.$imagName
             ]);
         }
     }
-
 
 }
 
