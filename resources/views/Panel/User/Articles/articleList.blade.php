@@ -28,9 +28,9 @@
                             <tr style="overflow: scroll; height: 60px;">
                                 <td style="width: 10%">
                                     <a href="#" class="btn btn-danger">حذف</a>
-                                    <a href="#" class="btn btn-success">ویرایش</a>
+                                    <a href="{{ route('userPanel.articles.edit'  , $article->id) }}" class="btn btn-success">ویرایش</a>
                                 </td>
-                                <td style="width: 20%"><a href="#">{{ $article->title }}</a></td> {{--todo {{ route('userPanel.articles.show' , $article->slug ?? '') }} --}}
+                                <td style="width: 20%"><a href="{{ route('userPanel.article.index' , $article->slug) }}">{{ $article->title }}</a></td> {{--todo {{ route('userPanel.articles.show' , $article->slug ?? '') }} --}}
                                 <td style="width: 30%">{{ $article->summery }}</td>
                                 <td style="width: 10%">
                                     <a href="{{ url($article->image) }}"><img style="max-height: 60px;width: auto;" src="{{ url($article->image) }}" alt="{{ $article->slug }}"></a>

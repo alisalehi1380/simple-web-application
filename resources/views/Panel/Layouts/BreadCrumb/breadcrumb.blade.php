@@ -5,7 +5,8 @@
                                                                             'userPanel.articles.list',
                                                                             'userPanel.articles.create',
                                                                             'userPanel.settings.changePassword',
-                                                                            'userPanel.settings.changeProfile'
+                                                                            'userPanel.settings.changeProfile',
+                                                                            'userPanel.article.index'
                                                                             ])?'font-weight: 600':'' }}" href="{{ request()->url() }}"> @yield('title')</a></li>
     </ol>
 </nav>

@@ -13,10 +13,11 @@ class SweetAlertToast
 
 //--------------------------------------- success ---------------------------------------
     public const loginSuccess = 'با موفقیت وارد شدید.';
-    public const createArticleSuccess = 'مقاله با موفقیت ایجاد شد.';
     public const changePasswordSuccess = 'رمز شما با موفقیت تغییر کرد.';
     public const changeProfileSuccess = 'پروفایل شما با موفقیت تغییر کرد.';
 
+    public const createArticleSuccess = 'مقاله با موفقیت ایجاد شد.';
+    public const updateArticleSuccess = 'مقاله شما با موفقیت تغییر کرد.';
 
 //--------------------------------------- warning (please) ---------------------------------------
     public const pleaseFirstSignup = 'لطفا ابتدا ثبت نام کنید';

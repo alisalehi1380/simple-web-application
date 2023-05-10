@@ -4,7 +4,7 @@ namespace App\Http\Controllers\panel\UserPanel;
 
 use App\Constants\SweetAlertToast;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Article\storeArticleRequest;
+use App\Http\Requests\Article\articleStoreRequest;
 use App\Http\Requests\UserPanel\Settings\changePasswordRequest;
 use App\Http\Requests\UserPanel\Settings\changeProfileRequest;
 use App\Models\Article;
@@ -12,6 +12,7 @@ use App\Models\User;
 use Carbon\Carbon;
 use Cviebrock\EloquentSluggable\Services\SlugService;
 use Illuminate\Contracts\View\View;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -30,10 +31,20 @@ class UserPanelController extends Controller
         ]);
     }
 
+
+//    ========================================== Articles ==========================================
+    public function articleIndex($slug)
+    {
+        return \view('panel.User.articles.articleIndex' , [
+            'article' => Article::where('slug' , $slug)->select('id', 'title', 'summery','description', 'tags', 'image', 'persian_date', 'slug' , 'read_time')->first(),
+            'author' => User::where('id' , \auth()->id())->select('first_name' , 'last_name' , 'profile_image')->first(),
+        ]);
+    }
+
     public function articleLists()
     {
         return view('Panel.User.Articles.articleList', [
-            'articles' => Article::where('user_id', \auth()->id())->select('title', 'summery', 'tags', 'image', 'persian_date', 'slug')->get(),
+            'articles' => Article::where('user_id', \auth()->id())->select('id', 'title', 'summery', 'tags', 'image', 'persian_date', 'slug')->get(),
         ]);
     }
 
@@ -46,10 +57,15 @@ class UserPanelController extends Controller
         return view('Panel.User.Articles.articleCreate');
     }
 
-    public function articleStore(storeArticleRequest $request)
+    /**
+     *  article store
+     * @param articleStoreRequest $request
+     * @return RedirectResponse
+     */
+    public function articleStore(articleStoreRequest $request)
     {
         $read_time = $this->readingTime($request->description);
-        $persian_date = verta()->format('Y-n-j');
+        $persian_date = verta()->format('Y-m-j');
         $imageName = $this->correctingFileNameWithSlug('image', Article::class, 'slug', "$request->title", $request);
         $this->saveImageToStorage('image', $request, 'public/articles/' . \auth()->id(), $imageName);
         $slug = SlugService::createSlug(Article::class, 'slug', $this->DeleteHtmlSpecialChars($request->title));
@@ -60,7 +76,7 @@ class UserPanelController extends Controller
             'slug'         => $slug,
             'summery'      => $this->DeleteHtmlSpecialChars($request->summery),
             'description'  => $this->DeleteHtmlSpecialChars($request->description),
-            'image'        => 'storage/articles/'.auth()->id().'/'.$imageName,
+            'image'        => 'storage/articles/' . auth()->id() . '/' . $imageName,
             'read_time'    => $read_time,
             'persian_date' => $persian_date,
 //            'tags'         => $request->tags,
@@ -70,25 +86,49 @@ class UserPanelController extends Controller
         return redirect()->route('userPanel.articles.list');
     }
 
-    public function updatePassword(changePasswordRequest $request)
+    /**
+     * show article edit page
+     * @param string $id
+     * @return View
+     */
+    public function articleEdit(string $id)
     {
-        $user_id = \auth()->id();
-        $getUser = User::where('id', $user_id)->first();
-        $passwordInDatabase = $getUser->password;
-        $old_password = $request->input('old_password');
-        $new_password = $request->input('new_password');
+        return \view('Panel.User.Articles.articleEdit', [
+            'article' => Article::where('id', $id)->select('id', 'title', 'slug', 'summery', 'description', 'image', 'read_time')->first()
+        ]);
+    }
 
-        if (Hash::check($old_password, $passwordInDatabase)) {
-            $getUser->update([
-                'password' => bcrypt($new_password)
-            ]);
-            toast(SweetAlertToast::changePasswordSuccess, 'success');
-            return redirect()->route('userPanel');
-        }
-        toast(SweetAlertToast::incorrectPassword, 'error');
+    /**
+     * article updating
+     * @param articleStoreRequest $request
+     * @param string $id
+     * @return RedirectResponse
+     */
+    public function articleUpdate(articleStoreRequest $request, string $id): RedirectResponse
+    {
+        $read_time = $this->readingTime($request->description);
+        $imageName = $this->correctingFileNameWithSlug('image', Article::class, 'slug', "$request->title", $request);
+        $this->saveImageToStorage('image', $request, env('PATH_ARTICLES_IMAGE_IN_STORAGE') . \auth()->id(), $imageName);
+        $slug = SlugService::createSlug(Article::class, 'slug', $this->DeleteHtmlSpecialChars($request->title));
+
+        $user = Article::where('id', $id);
+        $user->update([
+            'title'       => $this->DeleteHtmlSpecialChars($request->title),
+            'slug'        => $slug,
+            'summery'     => $this->DeleteHtmlSpecialChars($request->summery),
+            'description' => $this->DeleteHtmlSpecialChars($request->description),
+            'image'       => env('PATH_ARTICLES_IMAGE_IN_DATABASE') . auth()->id() . '/' . $imageName,
+            'read_time'   => $read_time,
+//            'tags'         => $request->tags, //todo
+        ]);
+
+        toast(SweetAlertToast::updateArticleSuccess, 'success');
         return redirect()->back();
     }
 
+
+//    ========================================== Settings ==========================================
+//    -------------------- Profile --------------------
     /**
      * return view changeProfile
      * @return View
@@ -116,9 +156,28 @@ class UserPanelController extends Controller
     }
 
 
+//    -------------------- Change Password --------------------
+    public function updatePassword(changePasswordRequest $request)
+    {
+        $user_id = \auth()->id();
+        $getUser = User::where('id', $user_id)->first();
+        $passwordInDatabase = $getUser->password;
+        $old_password = $request->input('old_password');
+        $new_password = $request->input('new_password');
+
+        if (Hash::check($old_password, $passwordInDatabase)) {
+            $getUser->update([
+                'password' => bcrypt($new_password)
+            ]);
+            toast(SweetAlertToast::changePasswordSuccess, 'success');
+            return redirect()->route('userPanel');
+        }
+        toast(SweetAlertToast::incorrectPassword, 'error');
+        return redirect()->back();
+    }
 
 
-//    ---------------------------------------------------------------------------
+//    ========================================== helper function ==============================================
 
     /**
      * delete html tags in content
@@ -208,7 +267,7 @@ class UserPanelController extends Controller
             $imagName = $this->correctingFileName($request, 'profile_image', $user->first()->first_name . '_' . $user->first()->last_name);
             $this->saveImageToStorage('profile_image', $request, env('PATH_USER_PROFILE_IMAGE_IN_STORAGE') . \auth()->id(), $imagName);
             $user->update([
-                'profile_image' => env('PATH_USER_PROFILE_IMAGE_IN_DATABASE').auth()->id().'/'.$imagName
+                'profile_image' => env('PATH_USER_PROFILE_IMAGE_IN_DATABASE') . auth()->id() . '/' . $imagName
             ]);
         }
     }
