@@ -20,6 +20,7 @@
                     <li class="treeview {{request()->routeIs([
                                                               'userPanel.articles.list',
                                                               'userPanel.articles.create',
+                                                              'userPanel.articles.edit'
                                                              ])?'active':'' }}">
                         <a href="#"><i class="fa fa-newspaper-o"></i><span>مقالات</span><i class="fa fa-angle-left"></i></a>
                         <ul class="treeview-menu">

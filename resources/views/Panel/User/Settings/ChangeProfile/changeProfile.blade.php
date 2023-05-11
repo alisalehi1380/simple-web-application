@@ -10,53 +10,60 @@
 @endsection
 @section('content')
 
-    <div class="col-12 col-lg-12 box-margin height-card">
-        <div class="card card-body">
-            <h4 class="card-title">اطلاعات پروفایل</h4>
-            <hr>
-            <div class="row">
-                <div class="col-sm-12 col-xs-12">
-                    <form method="post" action="{{ route('userPanel.settings.updateProfile') }}" enctype="multipart/form-data">
-                        @csrf
-                        <div class="d-flex">
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label>نام</label>
-                                    <input type="text" class="form-control @error('first_name') is-invalid @enderror" name="first_name" value="{{ $user->first_name }}">
-                                    @error('first_name')<span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>@enderror
-                                </div>
-                                <div class="mb-3">
-                                    <label>نام خانوادگی</label>
-                                    <input type="text" class="form-control @error('last_name') is-invalid @enderror" name="last_name" value="{{ $user->last_name }}">
-                                    @error('last_name')<span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>@enderror
-                                </div>
-                                <div class="mb-3">
-                                    <label>ایمیل</label>
-                                    <input type="text" class="form-control" readonly="" value="{{ $user->email }}"> {{--//todo name="email" --}}
-                                    <span class="invalid-feedback" style="display: inline-block !important;" role="alert"><strong>متاسفانه درحال حاضر امکان تغییر ایمیل وجود ندارد.</strong></span>
-                                </div>
-                                <div class="mb-3">
-                                    <label>شماره موبایل</label>
-                                    <input type="text" class="form-control" readonly="" value="{{ $user->phone_number }}"> {{--//todo name="phone_number" --}}
-                                    <span class="invalid-feedback" style="display: inline-block !important;" role="alert"><strong>متاسفانه درحال حاضر امکان تغییر شماره موبایل وجود ندارد.</strong></span>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label for="formFile" class="form-label">آپلود تصویر پروفایل</label>
-                                    <input class="form-control" type="file" id="formFile" name="profile_image"> {{-- //todo profile_image --}}
-                                </div>
-                                @if(isset($user->profile_image))
-                                    <div class="mb-4">
-                                        <img src="{{ $user->profile_image }}" alt="{{ $user->first_name .'-'.$user->last_name }}">
+    <div class="row">
+        <div class="col-12 col-lg-12 box-margin height-card">
+            <div class="card card-body">
+                <h4 class="card-title">اطلاعات پروفایل</h4>
+                <hr>
+                <div class="row">
+                    <div class="col-sm-12 col-xs-12">
+                        <form method="post" action="{{ route('userPanel.settings.updateProfile') }}" enctype="multipart/form-data">
+                            @csrf
+                            <div class="d-flex">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label>نام:</label>
+                                        <input type="text" class="form-control @error('first_name') is-invalid @enderror" name="first_name" value="{{ $user->first_name }}">
+                                        @error('first_name')<span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>@enderror
                                     </div>
-                                @endif
+                                    <div class="mb-3">
+                                        <label>نام خانوادگی:</label>
+                                        <input type="text" class="form-control @error('last_name') is-invalid @enderror" name="last_name" value="{{ $user->last_name }}">
+                                        @error('last_name')<span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>@enderror
+                                    </div>
+                                    <div class="mb-3">
+                                        <label>توصیف خودتان به عنوان یک نویسنده: (در عرض یک خط)</label>
+                                        <input type="text" class="form-control" value="علی صالحی هستم. دانشجو ترم 8 علوم ورزشی. علاقمند به دوچرخه سواری"> {{--//todo name="author_info" --}}
+                                        @error('author_info')<span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>@enderror
+                                    </div>
+                                    <div class="mb-3">
+                                        <label>ایمیل:</label>
+                                        <input type="text" class="form-control" readonly="" value="{{ $user->email }}"> {{--//todo name="email" --}}
+                                        <span class="invalid-feedback" style="display: inline-block !important;" role="alert"><strong>متاسفانه درحال حاضر امکان تغییر ایمیل وجود ندارد.</strong></span>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label>شماره موبایل:</label>
+                                        <input type="text" class="form-control" readonly="" value="{{ $user->phone_number }}"> {{--//todo name="phone_number" --}}
+                                        <span class="invalid-feedback" style="display: inline-block !important;" role="alert"><strong>متاسفانه درحال حاضر امکان تغییر شماره موبایل وجود ندارد.</strong></span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="formFile" class="form-label">آپلود تصویر پروفایل</label>
+                                        <input class="form-control" type="file" id="formFile" name="profile_image"> {{-- //todo profile_image --}}
+                                    </div>
+                                    @if(isset($user->profile_image))
+                                        <div class="mb-4">
+                                            <img src="{{ $user->profile_image }}" alt="{{ $user->first_name .'-'.$user->last_name }}">
+                                        </div>
+                                    @endif
+                                </div>
                             </div>
-                        </div>
-                        <button type="submit" class="btn btn-outline-success mb-2" style="float:left;">
-                            <i style="padding-left: 5px;" class="fa fa-save"></i>ثبت
-                        </button>
-                    </form>
+                            <button type="submit" class="btn btn-outline-success mb-2" style="float:left;">
+                                <i style="padding-left: 5px;" class="fa fa-save"></i>ثبت
+                            </button>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
