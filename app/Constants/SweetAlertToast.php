@@ -18,6 +18,7 @@ class SweetAlertToast
 
     public const createArticleSuccess = 'مقاله با موفقیت ایجاد شد.';
     public const updateArticleSuccess = 'مقاله شما با موفقیت تغییر کرد.';
+    public const deleteArticleSuccess = 'مقاله شما با موفقیت حذف شد.';
 
 //--------------------------------------- warning (please) ---------------------------------------
     public const pleaseFirstSignup = 'لطفا ابتدا ثبت نام کنید';

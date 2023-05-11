@@ -1,6 +1,6 @@
 @extends('Panel.Layouts.master-panel')
-
 @section('title' , 'لیست مقالات')
+
 
 @section('content')
     <div class="row">
@@ -28,10 +28,8 @@
                             @foreach($articles as $article)
                                 <tr style="overflow: scroll; height: 60px;">
                                     <td style="width: 10%">
-                                        <form class="d-inline" action="{{ route('userPanel.article.delete' , $article->id) }}" method="post">
-                                            @csrf
-                                            <button class="btn btn-danger" type="submit">حذف</button>
-                                        </form>
+                                        <button class="btn btn-danger" type="submit" data-toggle="modal" data-target="#article_delete">حذف</button>
+                                        @include('Panel.layouts.modals.articles.articleDeleteModal')
                                         <a href="{{ route('userPanel.articles.edit'  , $article->id) }}" class="btn btn-success">ویرایش</a>
                                     </td>
                                     <td style="width: 20%"><a href="{{ route('userPanel.article.index' , $article->slug) }}">{{ $article->title }}</a></td> {{--todo {{ route('userPanel.articles.show' , $article->slug ?? '') }} --}}

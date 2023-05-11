@@ -14,12 +14,15 @@ Route::middleware('auth')->group(function () {
     Route::get('user/panel/articles/create', [UserPanelController::class, 'articleCreate'])->name('userPanel.articles.create');
     Route::post('user/panel/articles/store', [UserPanelController::class, 'articleStore'])->name('userPanel.articles.store');
 
-    // article update
+    // article edit(update)
     Route::get('user/panel/articles/{id}', [UserPanelController::class, 'articleEdit'])->name('userPanel.articles.edit');
     Route::post('user/panel/articles/update/{id}', [UserPanelController::class, 'articleUpdate'])->name('userPanel.articles.update');
 
     // single page article
     Route::get('user/panel/article/{slug}', [UserPanelController::class, 'articleIndex'])->name('userPanel.article.index');
+
+    // article delete
+    Route::post('user/panel/article/delete/{id}', [UserPanelController::class, 'articleDelete'])->name('userPanel.article.delete');
 
 
 //------------------------------------------------------------- Settings -------------------------------------------------------------

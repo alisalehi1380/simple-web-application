@@ -20,7 +20,7 @@ use Illuminate\Support\Facades\Hash;
 class UserPanelController extends Controller
 {
     /**
-     * return view userPanel
+     * show user panel page
      * @return View
      */
     public function index()
@@ -33,15 +33,26 @@ class UserPanelController extends Controller
 
 
 //    ========================================== Articles ==========================================
-    public function articleIndex($slug)
+
+    /**
+     * single page article
+     * @param string $slug
+     * @return View
+     */
+    public function articleIndex(string $slug): view
     {
-        return \view('panel.User.articles.articleIndex' , [
-            'article' => Article::where('slug' , $slug)->select('id', 'title', 'summery','description', 'tags', 'image', 'persian_date', 'slug' , 'read_time')->first(),
-            'author' => User::where('id' , \auth()->id())->select('first_name' , 'last_name' , 'profile_image')->first(),
+        return \view('panel.User.articles.articleIndex', [
+            'article'   => Article::where('slug', $slug)->select('id', 'title', 'summery', 'description', 'tags', 'image', 'persian_date', 'slug', 'read_time')->first(),
+            'author'    => User::where('id', \auth()->id())->select('first_name', 'last_name', 'profile_image')->first(),
+            'date_diff' => $this->dateDiffNowToUpdatedArticle($slug)
         ]);
     }
 
-    public function articleLists()
+    /**
+     * show article lists page
+     * @return View
+     */
+    public function articleLists(): view
     {
         return view('Panel.User.Articles.articleList', [
             'articles' => Article::where('user_id', \auth()->id())->select('id', 'title', 'summery', 'tags', 'image', 'persian_date', 'slug')->get(),
@@ -49,20 +60,20 @@ class UserPanelController extends Controller
     }
 
     /**
-     * return view articleCreate
+     * show article create page
      * @return View
      */
-    public function articleCreate()
+    public function articleCreate(): View
     {
         return view('Panel.User.Articles.articleCreate');
     }
 
     /**
-     *  article store
+     * article saving
      * @param articleStoreRequest $request
      * @return RedirectResponse
      */
-    public function articleStore(articleStoreRequest $request)
+    public function articleStore(articleStoreRequest $request): RedirectResponse
     {
         $read_time = $this->readingTime($request->description);
         $persian_date = verta()->format('Y-m-j');
@@ -91,7 +102,7 @@ class UserPanelController extends Controller
      * @param string $id
      * @return View
      */
-    public function articleEdit(string $id)
+    public function articleEdit(string $id): View
     {
         return \view('Panel.User.Articles.articleEdit', [
             'article' => Article::where('id', $id)->select('id', 'title', 'slug', 'summery', 'description', 'image', 'read_time')->first()
@@ -126,21 +137,36 @@ class UserPanelController extends Controller
         return redirect()->back();
     }
 
-
+    /**
+     * article deleting
+     * @param string $id
+     * @return RedirectResponse
+     */
+    public function articleDelete(string $id): RedirectResponse
+    {
+        Article::where('id', $id)->delete(); //todo soft delete
+        toast(SweetAlertToast::deleteArticleSuccess, 'success');
+        return redirect()->route('userPanel.articles.list');
+    }
 //    ========================================== Settings ==========================================
 //    -------------------- Profile --------------------
     /**
-     * return view changeProfile
+     * show change profile page
      * @return View
      */
-    public function changeProfile()
+    public function changeProfile(): View
     {
         return view('Panel.User.Settings.ChangeProfile.changeProfile', [
             'user' => User::where('id', \auth()->id())->select('first_name', 'last_name', 'email', 'phone_number', 'profile_image')->first(),
         ]);
     }
 
-    public function updateProfile(changeProfileRequest $request)
+    /**
+     * user profile updating
+     * @param changeProfileRequest $request
+     * @return RedirectResponse
+     */
+    public function updateProfile(changeProfileRequest $request): RedirectResponse
     {
         User::where('id', \auth()->id())->update([
             'first_name' => $request->first_name,
@@ -157,7 +183,13 @@ class UserPanelController extends Controller
 
 
 //    -------------------- Change Password --------------------
-    public function updatePassword(changePasswordRequest $request)
+
+    /**
+     * user password updating
+     * @param changePasswordRequest $request
+     * @return RedirectResponse
+     */
+    public function updatePassword(changePasswordRequest $request): RedirectResponse
     {
         $user_id = \auth()->id();
         $getUser = User::where('id', $user_id)->first();
@@ -190,7 +222,7 @@ class UserPanelController extends Controller
     }
 
     /**
-     * Calculate the time to read a text
+     * calculate the time to read a text
      * @param string $content
      * @return int
      */
@@ -264,7 +296,7 @@ class UserPanelController extends Controller
     {
         if ($request->hasFile('profile_image')) {
             $user = User::where('id', \auth()->id());
-            $imagName = $this->correctingFileName($request, 'profile_image', $user->first()->first_name . '_' . $user->first()->last_name);
+            $imagName = $this->correctingFileName($request, 'profile_image', $user->first()->first_name . '-' . $user->first()->last_name);
             $this->saveImageToStorage('profile_image', $request, env('PATH_USER_PROFILE_IMAGE_IN_STORAGE') . \auth()->id(), $imagName);
             $user->update([
                 'profile_image' => env('PATH_USER_PROFILE_IMAGE_IN_DATABASE') . auth()->id() . '/' . $imagName
@@ -272,6 +304,49 @@ class UserPanelController extends Controller
         }
     }
 
+    /**
+     * Compares two dates
+     * @param Carbon $from
+     * @param Carbon $to
+     * @return string
+     */
+    private function dateDiff(Carbon $from, Carbon $to): string
+    {
+        $years = $from->diffInYears($to);
+        $months = $from->diffInMonths($to);
+        $weeks = $from->diffInWeeks($to);
+        $days = $from->diffInDays($to);
+        $hours = $from->diffInHours($to);
+        $minutes = $from->diffInMinutes($to);
+
+        switch (isset($from, $to)) {
+            case $years !== 0:
+                return $years . 'سال';
+            case $months !== 0:
+                return $months . 'ماه';
+            case $weeks !== 0:
+                return $weeks . 'هفته';
+            case $days !== 0:
+                return $days . 'روز';
+            case $hours !== 0:
+                return $hours . 'ساعت';
+            case $minutes !== 0:
+                return $minutes . 'دقیقه';
+        }
+    }
+
+    /**
+     * It shows that this article is from some time ago.
+     * @param string $slug
+     * @return string
+     */
+    private function dateDiffNowToUpdatedArticle(string $slug): string
+    {
+        $updated_at = Article::where('slug', $slug)->select('updated_at')->first();
+        $to = Carbon::parse("$updated_at->updated_at");
+        $from = now();
+        return $this->dateDiff($from, $to);
+    }
 }
 
 
