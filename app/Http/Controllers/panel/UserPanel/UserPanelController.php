@@ -37,13 +37,20 @@ class UserPanelController extends Controller
     /**
      * single page article
      * @param string $slug
-     * @return View
+     * @return RedirectResponse|View
      */
-    public function articleIndex(string $slug): view
+    public function articleIndex(string $slug): RedirectResponse|view
     {
+        $article = Article::withTrashed()->where('slug', $slug);
+        $existsArticle = $article->exists();
+        if (!$existsArticle) {
+            toast(SweetAlertToast::notExistsArticle, 'warning');
+            return redirect()->route('userPanel');
+        }
+
         return \view('panel.User.articles.articleIndex', [
-            'article'   => Article::where('slug', $slug)->select('id', 'title', 'summery', 'description', 'tags', 'image', 'persian_date', 'slug', 'read_time')->first(),
-            'author'    => User::where('id', \auth()->id())->select('first_name', 'last_name', 'profile_image')->first(),
+            'article'   => $article->first(['id', 'title', 'summery', 'description', 'tags', 'image', 'persian_date', 'slug', 'read_time']),
+            'author'    => User::where('id', \auth()->id())->first(['first_name', 'last_name', 'profile_image']),
             'date_diff' => $this->dateDiffNowToUpdatedArticle($slug)
         ]);
     }
@@ -105,7 +112,7 @@ class UserPanelController extends Controller
     public function articleEdit(string $id): View
     {
         return \view('Panel.User.Articles.articleEdit', [
-            'article' => Article::where('id', $id)->select('id', 'title', 'slug', 'summery', 'description', 'image', 'read_time')->first()
+            'article' => Article::withTrashed()->where('id', $id)->first(['id', 'title', 'slug', 'summery', 'description', 'image', 'read_time'])
         ]);
     }
 
@@ -117,18 +124,33 @@ class UserPanelController extends Controller
      */
     public function articleUpdate(articleStoreRequest $request, string $id): RedirectResponse
     {
-        $read_time = $this->readingTime($request->description);
-        $imageName = $this->correctingFileNameWithSlug('image', Article::class, 'slug', "$request->title", $request);
-        $this->saveImageToStorage('image', $request, env('PATH_ARTICLES_IMAGE_IN_STORAGE') . \auth()->id(), $imageName);
-        $slug = SlugService::createSlug(Article::class, 'slug', $this->DeleteHtmlSpecialChars($request->title));
+        $article = Article::withTrashed()->where('id', $id);
 
-        $user = Article::where('id', $id);
-        $user->update([
-            'title'       => $this->DeleteHtmlSpecialChars($request->title),
-            'slug'        => $slug,
+        // if the title article changes , slug will also change.
+        $articleTitle = $article->first('title');
+        if ($articleTitle->title !== $request->input('title')) {
+            $slug = SlugService::createSlug(Article::class, 'slug', $this->DeleteHtmlSpecialChars($request->title));
+            $article->update([
+                'title' => $this->DeleteHtmlSpecialChars($request->title),
+                'slug'  => $slug
+            ]);
+            toast(SweetAlertToast::updateArticleSuccess, 'success');
+            return redirect()->route('userPanel.articles.list');
+        }
+
+        // if upload image
+        if ($request->hasFile('image')) {
+            $imageName = $this->correctingFileNameWithSlug('image', Article::class, 'slug', "$request->title", $request);
+            $this->saveImageToStorage('image', $request, env('PATH_ARTICLES_IMAGE_IN_STORAGE') . \auth()->id(), $imageName);
+            $article->update([
+                'image' => env('PATH_ARTICLES_IMAGE_IN_DATABASE') . auth()->id() . '/' . $imageName,
+            ]);
+        }
+
+        $read_time = $this->readingTime($request->description);
+        $article->update([
             'summery'     => $this->DeleteHtmlSpecialChars($request->summery),
             'description' => $this->DeleteHtmlSpecialChars($request->description),
-            'image'       => env('PATH_ARTICLES_IMAGE_IN_DATABASE') . auth()->id() . '/' . $imageName,
             'read_time'   => $read_time,
 //            'tags'         => $request->tags, //todo
         ]);
@@ -167,19 +189,20 @@ class UserPanelController extends Controller
      */
     public function articleHardDelete(string $id): RedirectResponse
     {
-        Article::where('id' , $id)->forceDelete();
-        toast(SweetAlertToast::forceDeleteArticleSuccess , 'success');
+        Article::where('id', $id)->forceDelete();
+        toast(SweetAlertToast::forceDeleteArticleSuccess, 'success');
         return redirect()->back();
     }
 
-    /** article restoring from trash bin
+    /**
+     * article restoring from trash bin
      * @param $id
      * @return RedirectResponse
      */
     public function articleRestore($id): RedirectResponse
     {
         Article::withTrashed()->where('id', $id)->restore();
-        toast(SweetAlertToast::restoreArticleSuccess , 'success');
+        toast(SweetAlertToast::restoreArticleSuccess, 'success');
         return redirect()->route('userPanel.articles.trashed');
     }
 //    ========================================== Settings ==========================================
@@ -191,7 +214,7 @@ class UserPanelController extends Controller
     public function changeProfile(): View
     {
         return view('Panel.User.Settings.ChangeProfile.changeProfile', [
-            'user' => User::where('id', \auth()->id())->select('first_name', 'last_name', 'email', 'phone_number', 'profile_image')->first(),
+            'user' => User::where('id', \auth()->id())->first(['first_name', 'last_name', 'email', 'phone_number', 'profile_image']),
         ]);
     }
 
@@ -223,7 +246,7 @@ class UserPanelController extends Controller
      * @param changePasswordRequest $request
      * @return RedirectResponse
      */
-    public function updatePassword(  $request): RedirectResponse
+    public function updatePassword(changePasswordRequest $request): RedirectResponse
     {
         $user_id = \auth()->id();
         $getUser = User::where('id', $user_id)->first();
@@ -352,6 +375,7 @@ class UserPanelController extends Controller
         $days = $from->diffInDays($to);
         $hours = $from->diffInHours($to);
         $minutes = $from->diffInMinutes($to);
+        $seconds = $from->diffInSeconds($to);
 
         switch (isset($from, $to)) {
             case $years !== 0:
@@ -359,13 +383,15 @@ class UserPanelController extends Controller
             case $months !== 0:
                 return $months . 'ماه';
             case $weeks !== 0:
-                return $weeks . 'هفته';
+                return $weeks . ' هفته';
             case $days !== 0:
                 return $days . 'روز';
             case $hours !== 0:
                 return $hours . 'ساعت';
             case $minutes !== 0:
-                return $minutes . 'دقیقه';
+                return $minutes . ' دقیقه';
+            case $seconds !== 0:
+                return $seconds . ' ثانیه';
         }
     }
 
@@ -376,13 +402,9 @@ class UserPanelController extends Controller
      */
     private function dateDiffNowToUpdatedArticle(string $slug): string
     {
-        $updated_at = Article::where('slug', $slug)->select('updated_at')->first(); //todo withTrashed()
-        $to = Carbon::parse("$updated_at->updated_at");
+        $article = Article::where('slug', $slug)->first('updated_at');
+        $to = Carbon::parse("$article->updated_at");
         $from = now();
         return $this->dateDiff($from, $to);
     }
 }
-
-
-
-// 'public/image'.$article->image todo single page article

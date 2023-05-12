@@ -24,7 +24,7 @@
                             @foreach($articlesTrashed as $article)
                                 <tr style="overflow: scroll; height: 60px;">
                                     <td>{{ $article->id }}</td>
-                                    <td style="width: 20%"><a href="{{ route('userPanel.article.index' , $article->slug) }}">{{ $article->title }}</a></td> {{--todo {{ route('userPanel.articles.show' , $article->slug ?? '') }} --}}
+                                    <td style="width: 20%"><a href="{{ route('userPanel.articles.index' , $article->slug) }}">{{ $article->title }}</a></td> {{--todo {{ route('userPanel.articles.show' , $article->slug ?? '') }} --}}
                                     <td style="width: 30%">{{ $article->summery }}</td>
                                     <td style="width: 10%">
                                         <a target="_blank" href="{{ url($article->image) }}"><img style="max-height: 60px;width: auto;" src="{{ url($article->image) }}" alt="{{ $article->slug }}"></a>
@@ -36,7 +36,7 @@
                                     </td>
                                     <td style="width: 10%">{{ $article->persian_date }}</td>
                                     <td style="width: 10%">
-                                        <form class="d-inline" action="{{ route('userPanel.article.hardDelete' , $article->id) }}" method="POST">
+                                        <form class="d-inline" action="{{ route('userPanel.articles.hardDelete' , $article->id) }}" method="POST">
                                             @csrf
                                             @method('DELETE')
                                             <button class="btn btn-danger" type="submit">حذف</button>

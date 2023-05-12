@@ -1,17 +1,16 @@
 @extends('Panel.Layouts.master-panel')
-
 @section('title' , 'ویرایش مقاله')
 
 @section('content')
-
     <div class="col-12 col-lg-12 box-margin height-card">
         <div class="card card-body">
             <h4 class="card-title">ویرایش مقاله</h4>
             <hr>
             <div class="row">
                 <div class="col-sm-12 col-xs-12">
-                    <form method="post" action="{{ route('userPanel.articles.update' , $article->id) }}" enctype="multipart/form-data">
+                    <form method="POST" action="{{ route('userPanel.articles.update' , $article->id) }}" enctype="multipart/form-data">
                         @csrf
+                        @method('PUT')
                         <div class="form-group">
                             <label for="title">عنوان مقاله:</label>
                             <input type="text" class="form-control @error('title') is-invalid @enderror" id="title" name="title" value="{{ $article->title ?? old('title') }}">
@@ -44,7 +43,7 @@
                             </div>
                         @endif
                         <button type="submit" class="btn btn-outline-success mb-2"
-                            style="float:left;"><i class="fa fa-save" style="padding-left: 5px !important;"></i>ایجاد
+                            style="float:left;"><i class="fa fa-save" style="padding-left: 5px !important;"></i>ویرایش
                         </button>
                     </form>
                 </div>
@@ -94,11 +93,9 @@
     {{--            </div>--}}
     {{--        </div>--}}
     {{--    </div>--}}
-
 @endsection
 
 @section('js')
-
     <script>
         $(".custom-file-input").on("change", function () {
             var fileName = $(this).val().split("\\").pop();

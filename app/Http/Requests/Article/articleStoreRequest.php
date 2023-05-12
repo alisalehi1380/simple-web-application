@@ -20,7 +20,7 @@ class articleStoreRequest extends FormRequest
             'title'       => ['required', 'max:255'],
             'summery'     => ['required', 'max:255'],
             'description' => ['required'],
-            'image'       => ['required', 'mimes:jpg,jpeg,png,gif', 'max:10240'],
+            'image'       => ['nullable ', 'mimes:jpg,jpeg,png,gif', 'max:10240'],
 //            'tags'        => ['required', 'max:255'],
         ];
     }

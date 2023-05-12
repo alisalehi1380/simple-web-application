@@ -32,4 +32,9 @@ class SweetAlertToast
     public const sendTokenConfirmSMS = 'کد تایید شماره موبایل برای شما ارسال شد';
     public const incorrectPassword = 'رمز فعلی وارد شده، صحیح نیست.';
 
+
+//--------------------------------------- warning (not Exists) ---------------------------------------
+
+    public const notExistsArticle = 'متاسفانه این مقاله وجود ندارد.';
+
 }

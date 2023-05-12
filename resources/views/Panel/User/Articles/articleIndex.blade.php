@@ -35,7 +35,7 @@
                     <button class="btn btn-danger" type="submit" data-toggle="modal" data-target="#article_delete">حذف</button>
                 </div>
                 <div class="d-flex">
-                    <div style="margin-left:0.8rem !important;">
+                    <div class="" style="margin-left:0.8rem !important;">
                         <a href="#"> {{--//todo href --}}
                             <img class="img-author" style="" src="{{ $author->profile_image }}" alt="{{ $author->first_name.' '.$author->last_name }}"> {{-- todo href --}}
                         </a>
@@ -63,14 +63,14 @@
             <hr>
             <div class="p-3" style="padding: 0;">
                 @if(isset($article->image))
-                    <div class="mb-4">
+                    <div class="mb-4 d-flex justify-content-center">
                         <img style="max-height: 500px;" src="{{ $article->image }}" alt="{{ $article->slug }}">
                     </div>
                 @endif
                 <div class="">
                     <h1 class="mb-4" style="font-size: 2rem;">{{ $article->title }}</h1>
                     <div class="">
-                        <p class="">{!! $article->description !!}</p>
+                        <p class="" style="font-size: 1.1rem;line-height: 2;">{!! $article->description !!}</p>
                     </div>
                 </div>
             </div>

@@ -175,6 +175,9 @@ return [
         'email' => 'ایمیل',
         'old_password' => 'پسورد فعلی',
         'new_password' => 'پسورد جدید',
+        'title' => 'عنوان',
+        'summery' => 'خلاصه',
+        'description' => 'متن',
     ],
 
 ];

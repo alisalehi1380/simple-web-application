@@ -15,21 +15,21 @@ Route::middleware('auth')->group(function () {
     Route::post('user/panel/articles/store', [UserPanelController::class, 'articleStore'])->name('userPanel.articles.store');
 
     // article edit(update)
-    Route::get('user/panel/articles/{id}', [UserPanelController::class, 'articleEdit'])->name('userPanel.articles.edit');
-    Route::post('user/panel/articles/update/{id}', [UserPanelController::class, 'articleUpdate'])->name('userPanel.articles.update');
+    Route::get('user/panel/articles/id/{id}', [UserPanelController::class, 'articleEdit'])->name('userPanel.articles.edit');
+    Route::put('user/panel/articles/update/{id}', [UserPanelController::class, 'articleUpdate'])->name('userPanel.articles.update');
 
     // single page article
-    Route::get('user/panel/article/{slug}', [UserPanelController::class, 'articleIndex'])->name('userPanel.article.index');
+    Route::get('user/panel/articles/slug/{slug}', [UserPanelController::class, 'articleIndex'])->name('userPanel.articles.index');
 
     // article softDelete
-    Route::post('user/panel/article/delete/{id}', [UserPanelController::class, 'articleSoftDelete'])->name('userPanel.article.softDelete');
+    Route::delete('user/panel/articles/delete/{id}', [UserPanelController::class, 'articleSoftDelete'])->name('userPanel.articles.softDelete');
 
     // article hardDelete
     Route::get('user/panel/articles/trash/bin', [UserPanelController::class, 'articleTrashed'])->name('userPanel.articles.trashed');
-    Route::post('user/panel/article/hard-delete/{id}', [UserPanelController::class, 'articleHardDelete'])->name('userPanel.article.hardDelete');
+    Route::delete('user/panel/articles/hard-delete/{id}', [UserPanelController::class, 'articleHardDelete'])->name('userPanel.articles.hardDelete');
 
     // article restore article
-    Route::post('user/panel/article/restore/{id}', [UserPanelController::class, 'articleRestore'])->name('userPanel.articles.restoreArticle');
+    Route::post('user/panel/articles/restore/{id}', [UserPanelController::class, 'articleRestore'])->name('userPanel.articles.restoreArticle');
 
 //------------------------------------------------------------- Settings -------------------------------------------------------------
     //change-password
