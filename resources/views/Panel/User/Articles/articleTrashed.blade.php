@@ -1,16 +1,12 @@
 @extends('Panel.Layouts.master-panel')
-@section('title' , 'لیست مقالات')
-
+@section('title' , 'سطل زباله مقالات')
 
 @section('content')
     <div class="row">
         <div class="col-md-12 box-margin">
             <div class="card">
                 <div class="card-body">
-                    <h4 class="card-title" style="">لیست مقالات</h4>
-                    <a href="{{ route('userPanel.articles.create') }}" class="btn btn-warning mb-2 mr-2" style="float:left;margin-top:-37px;">
-                        <i class="fa fa-plus-square"></i> افزودن
-                    </a>
+                    <h4 class="card-title" style="">لیست مقالات حذف شده</h4>
                     <div class="table-responsive">
                         <table class="table table-hover text-center">
                             <thead>
@@ -22,11 +18,10 @@
                                 <th>تگ ها</th>
                                 <th>تاریخ تالیف</th>
                                 <th>عملیات</th>
-                                {{--                                                        <th>وضعیت</th>--}}
                             </tr>
                             </thead>
                             <tbody>
-                            @foreach($articles as $article)
+                            @foreach($articlesTrashed as $article)
                                 <tr style="overflow: scroll; height: 60px;">
                                     <td>{{ $article->id }}</td>
                                     <td style="width: 20%"><a href="{{ route('userPanel.article.index' , $article->slug) }}">{{ $article->title }}</a></td> {{--todo {{ route('userPanel.articles.show' , $article->slug ?? '') }} --}}
@@ -41,11 +36,15 @@
                                     </td>
                                     <td style="width: 10%">{{ $article->persian_date }}</td>
                                     <td style="width: 10%">
-                                        <form class="d-inline" action="{{ route('userPanel.article.softDelete' , $article->id) }}" method="post">
+                                        <form class="d-inline" action="{{ route('userPanel.article.hardDelete' , $article->id) }}" method="POST">
                                             @csrf
+                                            @method('DELETE')
                                             <button class="btn btn-danger" type="submit">حذف</button>
                                         </form>
-                                        <a href="{{ route('userPanel.articles.edit'  , $article->id) }}" class="btn btn-success">ویرایش</a>
+                                        <form class="d-inline" action="{{ route('userPanel.articles.restoreArticle' , $article->id ) }}" method="POST">
+                                            @csrf
+                                            <button type="submit" class="btn btn-primary">بازیابی</button>
+                                        </form>
                                     </td>
                                 </tr>
                             @endforeach

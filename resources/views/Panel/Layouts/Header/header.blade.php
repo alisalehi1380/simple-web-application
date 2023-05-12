@@ -1,6 +1,4 @@
 @yield('style')
-
-
 <header class="top-header-area d-flex align-items-center justify-content-between">
     <div class="left-side-content-area d-flex align-items-center">
         <!-- Mobile Logo -->
@@ -72,9 +70,7 @@
 
             @php
                 $user = \App\Models\User::where('id' , \auth()->id())->select('first_name' , 'last_name' , 'profile_image')->first();
-//                dd($user);
             @endphp
-{{--            @dump($user->profile_image)--}}
             <li class="nav-item dropdown">
                 <button type="button" class="btn dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     <img style="width: 40px;height: 40px;" src="{{ $user->profile_image }}" alt="{{ $user->first_name .'-'.$user->last_name }}">

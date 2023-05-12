@@ -21,9 +21,15 @@ Route::middleware('auth')->group(function () {
     // single page article
     Route::get('user/panel/article/{slug}', [UserPanelController::class, 'articleIndex'])->name('userPanel.article.index');
 
-    // article delete
-    Route::post('user/panel/article/delete/{id}', [UserPanelController::class, 'articleDelete'])->name('userPanel.article.delete');
+    // article softDelete
+    Route::post('user/panel/article/delete/{id}', [UserPanelController::class, 'articleSoftDelete'])->name('userPanel.article.softDelete');
 
+    // article hardDelete
+    Route::get('user/panel/articles/trash/bin', [UserPanelController::class, 'articleTrashed'])->name('userPanel.articles.trashed');
+    Route::post('user/panel/article/hard-delete/{id}', [UserPanelController::class, 'articleHardDelete'])->name('userPanel.article.hardDelete');
+
+    // article restore article
+    Route::post('user/panel/article/restore/{id}', [UserPanelController::class, 'articleRestore'])->name('userPanel.articles.restoreArticle');
 
 //------------------------------------------------------------- Settings -------------------------------------------------------------
     //change-password

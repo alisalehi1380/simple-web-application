@@ -142,11 +142,45 @@ class UserPanelController extends Controller
      * @param string $id
      * @return RedirectResponse
      */
-    public function articleDelete(string $id): RedirectResponse
+    public function articleSoftDelete(string $id): RedirectResponse
     {
-        Article::where('id', $id)->delete(); //todo soft delete
+        Article::where('id', $id)->delete();
         toast(SweetAlertToast::deleteArticleSuccess, 'success');
         return redirect()->route('userPanel.articles.list');
+    }
+
+    /**
+     * show trashBin articles page
+     * @return View
+     */
+    public function articleTrashed(): View
+    {
+        return \view('Panel.User.Articles.articleTrashed', [
+            'articlesTrashed' => Article::onlyTrashed()->get()
+        ]);
+    }
+
+    /**
+     * delete article for ever
+     * @param string $id
+     * @return RedirectResponse
+     */
+    public function articleHardDelete(string $id): RedirectResponse
+    {
+        Article::where('id' , $id)->forceDelete();
+        toast(SweetAlertToast::forceDeleteArticleSuccess , 'success');
+        return redirect()->back();
+    }
+
+    /** article restoring from trash bin
+     * @param $id
+     * @return RedirectResponse
+     */
+    public function articleRestore($id): RedirectResponse
+    {
+        Article::withTrashed()->where('id', $id)->restore();
+        toast(SweetAlertToast::restoreArticleSuccess , 'success');
+        return redirect()->route('userPanel.articles.trashed');
     }
 //    ========================================== Settings ==========================================
 //    -------------------- Profile --------------------
@@ -189,7 +223,7 @@ class UserPanelController extends Controller
      * @param changePasswordRequest $request
      * @return RedirectResponse
      */
-    public function updatePassword(changePasswordRequest $request): RedirectResponse
+    public function updatePassword(  $request): RedirectResponse
     {
         $user_id = \auth()->id();
         $getUser = User::where('id', $user_id)->first();
@@ -342,7 +376,7 @@ class UserPanelController extends Controller
      */
     private function dateDiffNowToUpdatedArticle(string $slug): string
     {
-        $updated_at = Article::where('slug', $slug)->select('updated_at')->first();
+        $updated_at = Article::where('slug', $slug)->select('updated_at')->first(); //todo withTrashed()
         $to = Carbon::parse("$updated_at->updated_at");
         $from = now();
         return $this->dateDiff($from, $to);

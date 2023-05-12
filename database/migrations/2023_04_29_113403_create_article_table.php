@@ -23,6 +23,7 @@ return new class extends Migration {
             $table->string('tags')->nullable();
             $table->string('read_time')->nullable();
             $table->string('persian_date')->nullable();
+            $table->softDeletes();
             $table->timestamps();
 
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
