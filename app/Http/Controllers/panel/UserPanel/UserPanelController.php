@@ -12,6 +12,7 @@ use App\Models\User;
 use Carbon\Carbon;
 use Cviebrock\EloquentSluggable\Services\SlugService;
 use Illuminate\Contracts\View\View;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -42,17 +43,17 @@ class UserPanelController extends Controller
     public function articleIndex(string $slug): RedirectResponse|view
     {
         $article = Article::withTrashed()->where('slug', $slug);
-        $existsArticle = $article->exists();
-        if (!$existsArticle) {
-            toast(SweetAlertToast::notExistsArticle, 'warning');
-            return redirect()->route('userPanel');
-        }
+        $checkArticleExists = $this->checkArticleExists($article);
 
-        return \view('panel.User.articles.articleIndex', [
-            'article'   => $article->first(['id', 'title', 'summery', 'description', 'tags', 'image', 'persian_date', 'slug', 'read_time']),
-            'author'    => User::where('id', \auth()->id())->first(['first_name', 'last_name', 'profile_image']),
-            'date_diff' => $this->dateDiffNowToUpdatedArticle($slug)
-        ]);
+        if ($checkArticleExists) {
+            return \view('panel.User.articles.articleIndex', [
+                'article'   => $article->first(['id', 'title', 'summery', 'description', 'tags', 'image', 'persian_date', 'slug', 'read_time']),
+                'author'    => User::where('id', \auth()->id())->first(['first_name', 'last_name', 'profile_image']),
+                'date_diff' => $this->dateDiffNowToUpdatedArticle($slug)
+            ]);
+        }
+        toast(SweetAlertToast::notExistsArticle, 'warning');
+        return redirect()->route('userPanel');
     }
 
     /**
@@ -107,13 +108,19 @@ class UserPanelController extends Controller
     /**
      * show article edit page
      * @param string $id
-     * @return View
+     * @return RedirectResponse | View
      */
-    public function articleEdit(string $id): View
+    public function articleEdit(string $id): RedirectResponse | View
     {
-        return \view('Panel.User.Articles.articleEdit', [
-            'article' => Article::withTrashed()->where('id', $id)->first(['id', 'title', 'slug', 'summery', 'description', 'image', 'read_time'])
-        ]);
+        $article = Article::withTrashed()->where('id', $id);
+        $checkArticleExists = $this->checkArticleExists($article);
+        if ($checkArticleExists) {
+            return \view('Panel.User.Articles.articleEdit', [
+                'article' => Article::withTrashed()->where('id', $id)->first(['id', 'title', 'slug', 'summery', 'description', 'image', 'read_time'])
+            ]);
+        }
+        toast(SweetAlertToast::notExistsArticle, 'warning');
+        return redirect()->route('userPanel');
     }
 
     /**
@@ -127,25 +134,14 @@ class UserPanelController extends Controller
         $article = Article::withTrashed()->where('id', $id);
 
         // if the title article changes , slug will also change.
-        $articleTitle = $article->first('title');
-        if ($articleTitle->title !== $request->input('title')) {
-            $slug = SlugService::createSlug(Article::class, 'slug', $this->DeleteHtmlSpecialChars($request->title));
-            $article->update([
-                'title' => $this->DeleteHtmlSpecialChars($request->title),
-                'slug'  => $slug
-            ]);
+        $checkTitleChange = $this->checkTitleChange($article , $request);
+        if ($checkTitleChange){
             toast(SweetAlertToast::updateArticleSuccess, 'success');
             return redirect()->route('userPanel.articles.list');
         }
 
         // if upload image
-        if ($request->hasFile('image')) {
-            $imageName = $this->correctingFileNameWithSlug('image', Article::class, 'slug', "$request->title", $request);
-            $this->saveImageToStorage('image', $request, env('PATH_ARTICLES_IMAGE_IN_STORAGE') . \auth()->id(), $imageName);
-            $article->update([
-                'image' => env('PATH_ARTICLES_IMAGE_IN_DATABASE') . auth()->id() . '/' . $imageName,
-            ]);
-        }
+        $this->ifUploadImage($request, $article);
 
         $read_time = $this->readingTime($request->description);
         $article->update([
@@ -270,10 +266,10 @@ class UserPanelController extends Controller
 
     /**
      * delete html tags in content
-     * @param $string
+     * @param string $string
      * @return string
      */
-    private function DeleteHtmlSpecialChars($string): string
+    private function DeleteHtmlSpecialChars(string $string): string
     {
         return htmlspecialchars(strip_tags($string));
     }
@@ -406,5 +402,52 @@ class UserPanelController extends Controller
         $to = Carbon::parse("$article->updated_at");
         $from = now();
         return $this->dateDiff($from, $to);
+    }
+
+    /**
+     * check article exists in database or not
+     * @param Builder $article
+     * @return bool
+     */
+    public function checkArticleExists(Builder $article):bool
+    {
+        return $article->exists();
+    }
+
+    /**
+     * check title article changes or not => if changed, create slug and updating in database
+     * @param Builder $article
+     * @param articleStoreRequest $request
+     * @return bool
+     */
+    private function checkTitleChange(Builder $article, articleStoreRequest $request):bool
+    {
+        $articleTitle = $article->first('title');
+        if ($articleTitle->title !== $request->input('title')) {
+            $slug = SlugService::createSlug(Article::class, 'slug', $this->DeleteHtmlSpecialChars($request->title));
+            $article->update([
+                'title' => $this->DeleteHtmlSpecialChars($request->title),
+                'slug'  => $slug
+            ]);
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * if upload image article => save to storage and update in database
+     * @param articleStoreRequest $request
+     * @param Builder $article
+     * @return void
+     */
+    private function ifUploadImage(articleStoreRequest $request, Builder $article): void
+    {
+        if ($request->hasFile('image')) {
+            $imageName = $this->correctingFileNameWithSlug('image', Article::class, 'slug', "$request->title", $request);
+            $this->saveImageToStorage('image', $request, env('PATH_ARTICLES_IMAGE_IN_STORAGE') . \auth()->id(), $imageName);
+            $article->update([
+                'image' => env('PATH_ARTICLES_IMAGE_IN_DATABASE') . auth()->id() . '/' . $imageName,
+            ]);
+        }
     }
 }
