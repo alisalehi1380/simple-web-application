@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::group([''], function () {
     Route::get('laravel/weblog', [WeblogController::class, 'index'])->name('weblog');
+    Route::get('/', [\App\Http\Controllers\Website\websiteController::class, 'image'])->name('weblog');
 
 });
 
