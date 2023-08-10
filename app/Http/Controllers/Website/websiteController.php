@@ -1,86 +1,94 @@
 <?php
 
-namespace App\Http\Controllers\Website;
+namespace App\Services\Poster;
 
-use App\Http\Controllers\Controller;
+use FaGD\PPersianRender;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\File;
 use Intervention\Image\Facades\Image;
-use Quince\PersianGD\GDTool;
 
-class websiteController extends Controller
+class createStoryPoster
 {
-    public function index()
-    {
-//        return view('welcome'); // todo 'website'
-    }
 
-    // write path from public forlder
-    private $img = 'Assets/image/saeed.jpg';
-    private $newImg = 'Assets/image/new/story/saeed.jpg';
+    private string $first_line;
+    private string $second_line;
+    private string $img;
 
-    private $template = 'Assets/image/template.png';
+    // story template
+    private $template = __DIR__ . 'app/Services/Poster/resources/templates/story-template.png';
+    private $font = __DIR__ . 'app/Services/Poster/resources/fonts/qatar.ttf';
 
-    private $newTemplate = 'Assets/image/new/template/template.png';
-    private $font = 'Assets/image/qatar.ttf';
+    private $storyPoster = __DIR__ . 'app/Services/Poster/resources/posters/story';
+    private $templateWithText = __DIR__. 'app/Services/Poster/resources/templates/template-with-text.jpg';
 
-    private $firstLine = 850;
-    private $lineHeight = 60;
+
+    private $fromTopToText = 850; //px
+    private $lineHeight = 60; //px
 
     // for fit img to width & height template
-    private $width = 1024;
-    private $height = 1280;
+    private $width = 1024; //px
+    private $height = 1280; //px
 
-    public function image()
+    public function __construct($first_line, $second_line, $img)
     {
-        $title = 'کناره گیری قهرمان ایران به نفع رکابزنان جوان کناره گیری قهرمان ایران';
-        dump($title, $array = explode(' ', $title) , implode(' ' , $array));
-
-        $title1 = 'کناره گیری قهرمان ایران به';
-        $text = \FaGD\PPersianRender::render($title1, true); //Reversed text for GD
-
-//        $img = public_path($this->img);
-        $template = public_path($this->template);
-        $font = public_path($this->font);
-        $newTemplate = public_path($this->newTemplate);
-
-
-        $image = Image::make($template);
-        $image->text($text, $image->getWidth() / 2, $this->firstLine, function ($font) {
-            $font->file(public_path('Assets/image/qatar.ttf'));
-            $font->align('center');
-            $font->valign('middle');
-            $font->size(40);
-            $font->color('#ffffff');
-        });
-
-        $title2 = 'نفع رکابزنان جوان';
-        $text = \FaGD\PPersianRender::render($title2, true); //Reversed text for GD
-        $image->text($text, $image->getWidth() / 2, $this->firstLine + $this->lineHeight, function ($font) {
-            $font->file(public_path('Assets/image/qatar.ttf'));
-            $font->align('center');
-            $font->valign('middle');
-            $font->size(40);
-            $font->color('#ffffff');
-        });
-
-        $image->save($newTemplate);
-
-        $this->insertTemplateToImg();
+        $this->first_line = $first_line;
+        $this->second_line = $second_line;
+        $this->img = $img;
     }
 
-    private function fitImg($image)
+//        $first_line = 'کناره گیری قهرمان ایران به';
+//        $second_line = 'نفع رکابزنان جوان';
+
+    public function create()
     {
-        $image->fit($this->width, $this->height);
+        $this->putTextToTemplate();
+        $this->insertTemplateToImg();
+
+    }
+
+    public function putTextToTemplate()
+    {
+        $image = Image::make($this->template);
+        // run 2 time
+        for ($i = 1; $i <= 2; $i++) {
+            $text = PPersianRender::render(($i = 1 ? $this->first_line : $this->second_line), true); //Reversed text for GD
+            $image->text($text, $image->getWidth() / 2, ($i = 1) ? $this->fromTopToText : $this->fromTopToText + $this->lineHeight, function ($font) {
+                $font->file($this->font);
+                $font->align('center');
+                $font->valign('middle');
+                $font->size(40);
+                $font->color('#ffffff');
+            });
+        }
+        $image->save($this->templateWithText);
     }
 
     private function insertTemplateToImg()
     {
-        $img = public_path($this->img);
-        $newTemplate = public_path($this->newTemplate);
-        $newImg = public_path($this->newImg);
-
-        $image = Image::make($img);
-        $this->fitImg($image);
-        $image->insert($newTemplate)->save($newImg);
+        $image = Image::make($this->img);
+        $image->fit($this->width, $this->height);
+        $image->insert($this->templateWithText)->save($this->storyPoster);
     }
 
+    public function indexBlogPoster()
+    {
+        return view('Admin.blog-poster', [
+//            'posts' => WPost::where('post_type' , 'post')->where('post_status', 'publish')->get()
+        ]);
+    }
+
+    public function createStoryPoster(Request $request)
+    {
+        $request->validate([
+            'img' => 'required|image|max:2048',
+        ]);
+
+        $img = $request->file('img');
+        $path = 'blog/wp-content/blog/poster';
+        $imgName = $img->getClientOriginalName();
+        $request->img->move($path, $imgName);
+
+        $storyPoster = new storyPoster($request->first_line, $request->second_line, $path.'/'.$imgName);
+        $storyPoster->create();
+    }
 }
